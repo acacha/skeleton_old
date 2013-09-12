@@ -38,8 +38,9 @@
 |
 */
 
-$route['default_controller'] = "welcome";
-$route['404_override'] = '';
+#Used skeleton as prefix to avoid name space conflicts
+$route['default_controller'] = "skeleton_main";
+$route['404_override'] = "skeleton_errors/error404";
 
 
 /* End of file routes.php */
