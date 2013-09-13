@@ -67,9 +67,9 @@ class skeleton_auth
 
 		// Load IonAuth MongoDB model if it's set to use MongoDB,
 		// We assign the model object to "ion_auth_model" variable.
-		$this->config->item('use_mongodb', 'ion_auth') ?
-			$this->load->model('ion_auth_mongodb_model', 'ion_auth_model') :
-			$this->load->model($params['model'],'ion_auth_model');
+		$this->config->item('use_mongodb', 'skeleton_auth_model') ?
+			$this->load->model('skeleton_auth_mongodb_model', 'skeleton_auth_model') :
+			$this->load->model($params['model'],'skeleton_auth_model');
 		
 		
 		$this->_cache_user_in_group =& $this->ion_auth_model->_cache_user_in_group;

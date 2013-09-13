@@ -4,7 +4,7 @@
 | -------------------------------------------------------------------------
 | Database Type
 | -------------------------------------------------------------------------
-| If set to TRUE, Skeleton Auth will use MongoDB as its database backend.
+| If set to TRUE, Ion Auth will use MongoDB as its database backend.
 |
 | If you use MongoDB there are two external dependencies that have to be
 | integrated with your project:
@@ -17,7 +17,7 @@ $config['use_mongodb'] = FALSE;
 | -------------------------------------------------------------------------
 | LDAP Database Type
 | -------------------------------------------------------------------------
-| If set to TRUE, Skeleton_auth will use Ldap as its database backend.
+| If set to TRUE, Ion Auth will use Ldap as its database backend.
 |
 */
 //OBSOLETE: USE REALMS DROPDOWN IN LOGIN FORM 
@@ -91,11 +91,11 @@ $config['max_rounds']     = 9;
  | The controller should check this function and act
  | appropriately. If this variable set to 0, there is no maximum.
  */
-$config['site_title']                 = "ebretic.com - ebreinventory";       // Site Title, example.com
+$config['site_title']                 = "ebretic.com - skeleton";       // Site Title, example.com
 $config['organization']               = "Ebretic Enginyeria SL";       // Organization name, EBRETIC ENGINYERIA SL
 $config['admin_email']                = "localhost"; // Admin Email, admin@example.com
-$config['default_group']              = 'inventory_readonly';           // Default group, use name
-$config['admin_group']                = 'inventory_admin';             // Default administrators group, use name
+$config['default_group']              = 'skeleton_readonly';           // Default group, use name
+$config['admin_group']                = 'skeleton_admin';             // Default administrators group, use name
 $config['identity']                   = 'username';             // A database column which is used to login with
 $config['min_password_length']        = 8;                   // Minimum Required Length of Password
 $config['max_password_length']        = 20;                  // Maximum Allowed Length of Password
