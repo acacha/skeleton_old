@@ -1,5 +1,8 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
+ *  Modifications by Sergi Tur Badenas
+ * 
+ *  BASED ON 
 * Name:  Auth Lang - English
 *
 * Author: Ben Edmunds
@@ -16,6 +19,21 @@
 * Description:  English language file for Ion Auth example views
 *
 */
+
+//LOGIN FORM
+$lang['login-form-greetings']   = 'Please login';
+$lang['User']   = 'User';
+$lang['Password']   = 'Password';
+$lang['Register']   = 'Register';
+$lang['Login']   = 'Login';
+$lang['application_of'] = "is an app done by ";
+$lang['created by'] = "created by";
+$lang['remember'] = 'Remember';
+
+//FORGOT PASSWORD FORM
+$lang['come_back']="Come back";
+$lang['username'] = "username";
+$lang['email'] = 'email';
 
 // Errors
 $lang['error_csrf'] = 'This form post did not pass our security checks.';
@@ -135,6 +153,11 @@ $lang['forgot_password_submit_btn']              = 'Submit';
 $lang['forgot_password_validation_email_label']  = 'Email Address';
 $lang['forgot_password_username_identity_label'] = 'Username';
 $lang['forgot_password_email_identity_label']    = 'Email';
+
+$lang['forgot_password_identity_not_found']    = "The %s doesn't pertain to any database user!";
+$lang['forgot_password_identity_found_more_than_one'] = "There is more than one user with this %s. Please advice database's administrator to repair this error";
+$lang['do_you_not_remember_your_identity'] = "You do not remember your %s?";
+$lang['try_with_your_identity'] = "Try with %s";
 
 
 // Reset Password

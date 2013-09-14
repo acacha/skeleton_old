@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- *  Create by Sergi Tur Badenas
+ *  Create by Sergi Tur Badenas. Supports MySQL and Ldap
  * 
  *  Based on:
  * 
@@ -158,41 +158,63 @@ class Skeleton_auth_model extends CI_Model
 	 * @var array
 	 **/
 	protected $_cache_groups = array();
+	
+	/**
+	 * realm
+	 *
+	 * @var string
+	 **/
+	protected $realm = "mysql";
+	
+	public function getRealm() {
+        return $this->realm;
+    }
+
+    public function setRealm($realm) {
+        $this->realm= $realm;
+    }
 
 	public function __construct()
 	{
+		
+		//LOAD LDAP LIBRARY if Ldap is one of active realms
+		$realms = explode(",",$this->config->item('realms','skeleton_auth'));
+		if (in_array("ldap", $realms)) {
+			$this->load->library('Auth_Ldap');	
+		}
+		
 		parent::__construct();
 		$this->load->database();
-		$this->load->config('ion_auth', TRUE);
+		$this->load->config('skeleton_auth', TRUE);
 		$this->load->helper('cookie');
 		$this->load->helper('date');
 		$this->lang->load('ion_auth');
 
 		//initialize db tables data
-		$this->tables  = $this->config->item('tables', 'ion_auth');
+		$this->tables  = $this->config->item('tables', 'skeleton_auth');
 
 		//initialize data
-		$this->identity_column = $this->config->item('identity', 'ion_auth');
-		$this->store_salt      = $this->config->item('store_salt', 'ion_auth');
-		$this->salt_length     = $this->config->item('salt_length', 'ion_auth');
-		$this->join			   = $this->config->item('join', 'ion_auth');
+		$this->identity_column = $this->config->item('identity', 'skeleton_auth');
+		$this->store_salt      = $this->config->item('store_salt', 'skeleton_auth');
+		$this->salt_length     = $this->config->item('salt_length', 'skeleton_auth');
+		$this->join			   = $this->config->item('join', 'skeleton_auth');
 
 
 		//initialize hash method options (Bcrypt)
-		$this->hash_method = $this->config->item('hash_method', 'ion_auth');
-		$this->default_rounds = $this->config->item('default_rounds', 'ion_auth');
-		$this->random_rounds = $this->config->item('random_rounds', 'ion_auth');
-		$this->min_rounds = $this->config->item('min_rounds', 'ion_auth');
-		$this->max_rounds = $this->config->item('max_rounds', 'ion_auth');
+		$this->hash_method = $this->config->item('hash_method', 'skeleton_auth');
+		$this->default_rounds = $this->config->item('default_rounds', 'skeleton_auth');
+		$this->random_rounds = $this->config->item('random_rounds', 'skeleton_auth');
+		$this->min_rounds = $this->config->item('min_rounds', 'skeleton_auth');
+		$this->max_rounds = $this->config->item('max_rounds', 'skeleton_auth');
 
 
 		//initialize messages and error
 		$this->messages = array();
 		$this->errors = array();
-		$this->message_start_delimiter = $this->config->item('message_start_delimiter', 'ion_auth');
-		$this->message_end_delimiter   = $this->config->item('message_end_delimiter', 'ion_auth');
-		$this->error_start_delimiter   = $this->config->item('error_start_delimiter', 'ion_auth');
-		$this->error_end_delimiter     = $this->config->item('error_end_delimiter', 'ion_auth');
+		$this->message_start_delimiter = $this->config->item('message_start_delimiter', 'skeleton_auth');
+		$this->message_end_delimiter   = $this->config->item('message_end_delimiter', 'skeleton_auth');
+		$this->error_start_delimiter   = $this->config->item('error_start_delimiter', 'skeleton_auth');
+		$this->error_end_delimiter     = $this->config->item('error_end_delimiter', 'skeleton_auth');
 
 		//initialize our hooks object
 		$this->_ion_hooks = new stdClass;
@@ -722,9 +744,9 @@ class Skeleton_auth_model extends CI_Model
 
 		if ($profile) {
 
-			if ($this->config->item('forgot_password_expiration', 'ion_auth') > 0) {
+			if ($this->config->item('forgot_password_expiration', 'skeleton_auth') > 0) {
 				//Make sure it isn't expired
-				$expiration = $this->config->item('forgot_password_expiration', 'ion_auth');
+				$expiration = $this->config->item('forgot_password_expiration', 'skeleton_auth');
 				if (time() - $profile->forgotten_password_time > $expiration) {
 					//it has expired
 					$this->set_error('forgot_password_expired');
@@ -761,7 +783,7 @@ class Skeleton_auth_model extends CI_Model
 	{
 		$this->trigger_events('pre_register');
 
-		$manual_activation = $this->config->item('manual_activation', 'ion_auth');
+		$manual_activation = $this->config->item('manual_activation', 'skeleton_auth');
 
 		if ($this->identity_column == 'email' && $this->email_check($email))
 		{
@@ -831,7 +853,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 		
 		//Change made by Sergi Tur: firt check if default group exists in database before using it
-		$default_group_query = $this->where('name', $this->config->item('default_group', 'ion_auth'))->group();
+		$default_group_query = $this->where('name', $this->config->item('default_group', 'skeleton_auth'))->group();
 		if ($default_group_query->num_rows() > 0)	{
 			$default_group = $default_group_query->row();
 			if ((isset($default_group->id) && !isset($groups)) || (empty($groups) && !in_array($default_group->id, $groups)))
@@ -844,6 +866,157 @@ class Skeleton_auth_model extends CI_Model
 
 		return (isset($id)) ? $id : FALSE;
 	}
+	
+	public function login($identity, $password, $remember = FALSE)
+	{
+		//GET REALM
+		switch ($this->realm) {
+			case "mysql":
+				return $this->login_mysql($identity, $password, $remember);
+				break;
+			case "ldap":
+				return $this->login_ldap($identity, $password, $remember);
+				break;
+			default:
+				return $this->login_mysql($identity, $password, $remember);
+				break;
+		}
+		
+	}
+	
+	/**
+	 * Checks credentials and logs the passed user in if possible.
+	 *
+	 * @return bool
+	 */
+	public function login_ldap($identity, $password, $remember = FALSE)
+	{
+		$this->trigger_events('pre_login');
+		
+		if (empty($identity) || empty($password))
+		{
+			$this->set_error('login_unsuccessful');
+			return FALSE;
+		}
+		
+		//IN MYSQL HERE: $this->trigger_events('extra_where');
+		//TODO: COULD WE DO SOMETHING SIMILAR IN LDAP?
+		
+		$return_value=$this->auth_ldap->login($identity, $password);
+		
+		switch ($return_value) {
+			case 1:
+				break;
+			case -1:
+				$this->increase_login_attempts($identity);
+				$this->trigger_events('post_login_unsuccessful');
+				$this->set_error('login_unsuccessful');
+				return FALSE;
+				break;
+			case -2:
+				$this->increase_login_attempts($identity);
+				$this->trigger_events('post_login_unsuccessful');
+				$this->set_error('login_unsuccessful_not_allowed_role');	
+				return FALSE;
+				break;
+		}
+		
+		//AT THIS POINT USER HAS LOGGED CORRECTLY AT LDAP
+		
+		//CHECK IF ACCOUNT HAS TO BE LOCKED BY TOO MANY AUTH ATTEMPTS
+		if($this->is_time_locked_out($identity))
+		{
+			//Hash something anyway, just to take up time
+			$this->hash_password($password);
+
+			$this->trigger_events('post_login_unsuccessful');
+			$this->set_error('login_timeout');
+
+			return FALSE;
+		}
+		
+		//CORRECT LOGIN. SET DATA:
+		
+		$email;
+		$id;
+		$last_login;
+		$username=$identity;
+		$user = new stdClass;
+		
+		// ADD USER TO users table if not exists
+		if (!$this->username_check($identity)) {
+			//NOT EXISTS -> ADD/REGISTER
+			$additional_data = $this->auth_ldap->get_additional_data($identity);
+			$email=$this->auth_ldap->get_email($identity);
+			$id=$this->register($identity, $password, $email, $additional_data);
+		}
+
+		$database_user=$this->get_user_by_username($identity);
+		$email=$database_user->email;
+		$id=$database_user->id;
+		$last_login=$database_user->last_login;
+		
+		//IS USER ACTIVE?
+		if (!$this->is_user_active($identity)) {
+			$this->trigger_events('post_login_unsuccessful');
+			$this->set_error('login_unsuccessful_not_active');
+			return FALSE;
+		}
+
+		//SET SESSION DATA
+		$user->identity=$identity;
+		$user->username=$username;
+		$user->email=$email;
+		$user->id=$id;
+		$user->last_login=$last_login;
+		
+		$this->set_session($user);
+
+		$this->update_last_login($user->id);
+	
+		$this->clear_login_attempts($identity);
+
+		if ($remember && $this->config->item('remember_users', 'ion_auth')) {
+			$this->remember_user($user->id);
+		}
+		
+		//GET CURRENT ROLE INFO
+		$current_rol_id = $this->session->userdata('role');
+		$current_role_name=$this->_get_rolename_byId($current_rol_id);
+		
+		//SET CORRECT LDAP GRUPS IN DATABASE		
+		
+		//CHECK IF ROL EXISTS AS GROUP IN DATABASE
+		if (! $this->_check_if_group_exists($current_role_name)) {
+			//ADD ROLE AS GROUP AT DATABASE
+			$group = $this->ion_auth->create_group($current_role_name, "Automatic group added as ldap inventory role");
+			if(!$group) {
+				show_error($this->ion_auth->messages());
+			}
+		}
+		
+		//SET (IF NOT YET) LDAP ROLES AS DATABASE USER GROUPS
+		$group_id = $this->_get_group_id_by_group_name($current_role_name);
+		if (! $this->_check_if_user_group_exists($current_role_name) ) {
+			$this->add_to_group($group_id,$user->id);
+		}
+		
+		//USERS HAVE ONLY ON LDAP ROLE! -> DELETE OLD LDAP USERS GROUPS
+		$ldap_roles = (array) $this->config->item('roles');
+		$ldap_roles_without_current_role=array_diff($ldap_roles,(array) $current_role_name);
+		
+		$ldap_roles_database_keys=array();
+		foreach ($ldap_roles_without_current_role as $ldaprole){
+			$ldap_roles_database_keys[]=$this->_get_group_id_by_group_name($ldaprole);
+		}
+		
+		//REMOVE USER FROM OTHER LDAP GROUPS:
+		$this->remove_from_group($ldap_roles_database_keys, $user->id);
+		
+		//TODO
+		//$this->post_login_session_initialitze($current_role_name);
+		return TRUE;
+	}
 
 	/**
 	 * login
@@ -851,7 +1024,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @return bool
 	 * @author Mathew
 	 **/
-	public function login($identity, $password, $remember=FALSE)
+	public function login_mysql($identity, $password, $remember=FALSE)
 	{
 		$this->trigger_events('pre_login');
 
@@ -900,7 +1073,7 @@ class Skeleton_auth_model extends CI_Model
 
 				$this->clear_login_attempts($identity);
 
-				if ($remember && $this->config->item('remember_users', 'ion_auth'))
+				if ($remember && $this->config->item('remember_users', 'skeleton_auth'))
 				{
 					$this->remember_user($user->id);
 				}
@@ -930,8 +1103,8 @@ class Skeleton_auth_model extends CI_Model
 	 * @return boolean
 	 **/
 	public function is_max_login_attempts_exceeded($identity) {
-		if ($this->config->item('track_login_attempts', 'ion_auth')) {
-			$max_attempts = $this->config->item('maximum_login_attempts', 'ion_auth');
+		if ($this->config->item('track_login_attempts', 'skeleton_auth')) {
+			$max_attempts = $this->config->item('maximum_login_attempts', 'skeleton_auth');
 			if ($max_attempts > 0) {
 				$attempts = $this->get_attempts_num($identity);
 				return $attempts >= $max_attempts;
@@ -949,7 +1122,7 @@ class Skeleton_auth_model extends CI_Model
 	 */
 	function get_attempts_num($identity)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth')) {
+		if ($this->config->item('track_login_attempts', 'skeleton_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 
 			$this->db->select('1', FALSE);
@@ -970,7 +1143,7 @@ class Skeleton_auth_model extends CI_Model
 	 */
 	public function is_time_locked_out($identity) {
 
-		return $this->is_max_login_attempts_exceeded($identity) && $this->get_last_attempt_time($identity) > time() - $this->config->item('lockout_time', 'ion_auth');
+		return $this->is_max_login_attempts_exceeded($identity) && $this->get_last_attempt_time($identity) > time() - $this->config->item('lockout_time', 'skeleton_auth');
 	}
 
 	/**
@@ -980,7 +1153,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @return	int
 	 */
 	public function get_last_attempt_time($identity) {
-		if ($this->config->item('track_login_attempts', 'ion_auth')) {
+		if ($this->config->item('track_login_attempts', 'skeleton_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 
 			$this->db->select_max('time');
@@ -1003,7 +1176,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @param string $identity
 	 **/
 	public function increase_login_attempts($identity) {
-		if ($this->config->item('track_login_attempts', 'ion_auth')) {
+		if ($this->config->item('track_login_attempts', 'skeleton_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 			return $this->db->insert($this->tables['login_attempts'], array('ip_address' => $ip_address, 'login' => $identity, 'time' => time()));
 		}
@@ -1017,7 +1190,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @param string $identity
 	 **/
 	public function clear_login_attempts($identity, $expire_period = 86400) {
-		if ($this->config->item('track_login_attempts', 'ion_auth')) {
+		if ($this->config->item('track_login_attempts', 'skeleton_auth')) {
 			$ip_address = $this->_prepare_ip($this->input->ip_address());
 
 			$this->db->where(array('ip_address' => $ip_address, 'login' => $identity));
@@ -1556,14 +1729,14 @@ class Skeleton_auth_model extends CI_Model
 		$this->trigger_events('set_lang');
 
 		// if the user_expire is set to zero we'll set the expiration two years from now.
-		if($this->config->item('user_expire', 'ion_auth') === 0)
+		if($this->config->item('user_expire', 'skeleton_auth') === 0)
 		{
 			$expire = (60*60*24*365*2);
 		}
 		// otherwise use what is set
 		else
 		{
-			$expire = $this->config->item('user_expire', 'ion_auth');
+			$expire = $this->config->item('user_expire', 'skeleton_auth');
 		}
 
 		set_cookie(array(
@@ -1625,14 +1798,14 @@ class Skeleton_auth_model extends CI_Model
 		if ($this->db->affected_rows() > -1)
 		{
 			// if the user_expire is set to zero we'll set the expiration two years from now.
-			if($this->config->item('user_expire', 'ion_auth') === 0)
+			if($this->config->item('user_expire', 'skeleton_auth') === 0)
 			{
 				$expire = (60*60*24*365*2);
 			}
 			// otherwise use what is set
 			else
 			{
-				$expire = $this->config->item('user_expire', 'ion_auth');
+				$expire = $this->config->item('user_expire', 'skeleton_auth');
 			}
 
 			set_cookie(array(
@@ -1690,7 +1863,7 @@ class Skeleton_auth_model extends CI_Model
 			$this->set_session($user);
 
 			//extend the users cookies if the option is enabled
-			if ($this->config->item('user_extend_on_login', 'ion_auth'))
+			if ($this->config->item('user_extend_on_login', 'skeleton_auth'))
 			{
 				$this->remember_user($user->id);
 			}
@@ -2064,5 +2237,76 @@ class Skeleton_auth_model extends CI_Model
 		{
 			return inet_pton($ip_address);
 		}
+	}
+	
+	/**
+	 * Check if user is active
+	 */
+	public function is_user_active($username) {
+		
+		$query = $this->db->select($this->identity_column . ', username, active')
+		                  ->where($this->identity_column, $this->db->escape_str($username))
+		                  ->limit(1)
+		                  ->get($this->tables['users']);
+		
+		if ($query->num_rows() === 1) {
+			$user = $query->row();
+			if ($user->active == 1)	{
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+	
+	/**
+	 * Get user data by username
+	 *
+	 * @return user object
+	 * @author Sergi Tur
+	 **/
+	public function get_user_by_username($username)
+	{
+		if (empty($username))
+		{
+			return FALSE;
+		}
+
+		$query = $this->db->where('username', $username)
+						->limit(1)
+		                ->get($this->tables['users']);
+		return $query->row();
+	}
+	
+	function _get_rolename_byId($id) {		
+		$roles = (array) $this->config->item('roles');
+		return $roles[(int) $id];
+	}
+	
+	protected function _get_group_id_by_group_name ($groupname) {
+		$groups = $this->ion_auth->groups()->result();
+		foreach ($groups as $group) {
+			if ( $group->name == $groupname )
+				return $group->id;
+		}
+		return false;
+	}
+	
+	protected function _check_if_user_group_exists($groupname) {
+		$usergroups=$this->ion_auth->get_users_groups()->result();
+		foreach ($usergroups as $usergroup) {
+			if ( $usergroup->name == $groupname ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected function _check_if_group_exists($groupname) {
+		$groups = $this->ion_auth->groups()->result();
+		foreach ($groups as $group) {
+			if ( $group->name == $groupname )
+				return true;
+		}
+		return false;
 	}
 }

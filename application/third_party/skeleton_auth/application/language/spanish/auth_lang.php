@@ -1,5 +1,8 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
+ *  Modifications by Sergi Tur Badenas
+ * 
+ *  BASED ON:
 * Name:  Auth Lang - English
 *
 * Author: Ben Edmunds
@@ -19,6 +22,21 @@
 * Description:  Spanish language file for Ion Auth example views
 *
 */
+
+//LOGIN FORM
+$lang['login-form-greetings']   = 'Por favor, entrar';
+$lang['User']   = 'Usuario';
+$lang['Password']   = 'Pasword';
+$lang['Register']   = 'Registrar';
+$lang['Login']   = 'Entrar';
+$lang['application_of'] = "es una aplicación de ";
+$lang['created by'] = "creada por";
+$lang['remember']       		= 'Recordar';
+
+//FORGOT PASSWORD FORM
+$lang['come_back']="Volver";
+$lang['username'] = "Nombre de usuario";
+$lang['email'] = 'Correo electrónico';
 
 // Errors
 $lang['error_csrf'] = 'Esta forma no paso nuestras pruebas de seguridad.';

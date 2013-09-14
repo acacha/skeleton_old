@@ -11,3 +11,5 @@ application/cache/*
 application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
+
+application/third_party/skeleton_auth/application/config/auth_ldap.php

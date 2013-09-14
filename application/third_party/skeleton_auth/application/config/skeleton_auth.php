@@ -2,6 +2,56 @@
 
 /*
 | -------------------------------------------------------------------------
+| METADATA
+| -------------------------------------------------------------------------
+| 
+*/
+$config['login_appname'] = "Skeleton";
+$config['login_entity'] = "Ebretic Enginyeria SL";
+
+$config['copyright_url'] = "http://acacha.org/mediawiki/index.php/skeleton";
+$config['copyright_app_name'] = "Skeleton";
+$config['copyright_entity_name'] = "Ebretic Enginyeria SL";
+$config['copyright_entity_url'] = "http://www.ebretic.com";
+$config['copyright_entity_url_name'] = "www.ebretic.com";
+$config['copyright_authors_text'] ='Sergi Tur Badenas';
+$config['copyright_authors_html'] ='<a href="http://acacha.org">Sergi Tur Badenas</a>';
+
+/*
+|--------------------------------------------------------------------------
+| ACTIVE REALMS
+|--------------------------------------------------------------------------
+|
+| Active Authentication Realms. Supported mysql, ldap, mongodb
+| 
+| Example: ldap,mysql
+*/
+$config['realms'] = "mysql,ldap";
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT REALM
+|--------------------------------------------------------------------------
+|
+| Default realm at login box
+| 
+| Example: ldap
+*/
+$config['default_realm'] = "mysql";
+
+/*
+|--------------------------------------------------------------------------
+| MAINTENANCE MODE
+|--------------------------------------------------------------------------
+|
+| Activate maintenance mode?
+| 
+| Example: false
+*/
+$config['maintenance_mode'] = true;
+
+/*
+| -------------------------------------------------------------------------
 | Database Type
 | -------------------------------------------------------------------------
 | If set to TRUE, Ion Auth will use MongoDB as its database backend.

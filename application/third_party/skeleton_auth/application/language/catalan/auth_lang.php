@@ -12,6 +12,21 @@
 *
 */
 
+//LOGIN FORM
+$lang['login-form-greetings']   = 'Please, log in';
+$lang['User']   = 'Usuari';
+$lang['Password']   = 'Paraula de pas';
+$lang['Register']   = 'Registrar';
+$lang['Login']   = 'Entrar';
+$lang['application_of'] = "és una aplicació d'";
+$lang['created by'] = "creada per";
+$lang['remember']       		= 'Recordar';
+
+//FORGOT PASSWORD FORM
+$lang['come_back']="Tornar";
+$lang['username'] = "Nom d'usuari";
+$lang['email'] = 'Correu electrònic';
+
 // Errors
 $lang['error_csrf'] = 'This form post did not pass our security checks.';
 
