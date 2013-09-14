@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * 
- *  Sergi Tur. TODO
+ *  Created Sergi Tur (sergitur@ebretic.com)
  * 
  *  BASED ON: Ion Auth
  *
@@ -68,7 +68,7 @@ class skeleton_auth
 		// Load IonAuth MongoDB model if it's set to use MongoDB,
 		// We assign the model object to "ion_auth_model" variable.
 		$this->config->item('use_mongodb', 'skeleton_auth_model') ?
-			$this->load->model('skeleton_auth_mongodb_model', 'skeleton_auth_model') :
+			$this->load->model('ion_auth_mongodb_model', 'skeleton_auth_model') :
 			$this->load->model($params['model'],'skeleton_auth_model');
 		
 		

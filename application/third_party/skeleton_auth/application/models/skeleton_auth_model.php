@@ -1,22 +1,15 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
+ *  Create by Sergi Tur Badenas
+ * 
+ *  Based on:
+ * 
 * Name:  Ion Auth Model
 *
 * Author:  Ben Edmunds
 * 		   ben.edmunds@gmail.com
 *	  	   @benedmunds
-*
-* Added Awesomeness: Phil Sturgeon
-*
-* Location: http://github.com/benedmunds/CodeIgniter-Ion-Auth
-*
-* Created:  10.01.2009
-* 
-* Last Change: 3.22.13
-*
-* Changelog:
-* * 3-22-13 - Additional entropy added - 52aa456eef8b60ad6754b31fbdcc77bb
-* 
+** 
 * Description:  Modified auth system based on redux_auth with extensive customization.  This is basically what Redux Auth 2 should be.
 * Original Author name has been kept but that does not mean that the method has not been modified.
 *
@@ -24,7 +17,7 @@
 *
 */
 
-class Ion_auth_model extends CI_Model
+class Skeleton_auth_model extends CI_Model
 {
 	/**
 	 * Holds an array of tables used
