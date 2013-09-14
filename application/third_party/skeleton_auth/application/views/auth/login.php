@@ -8,6 +8,9 @@
       <meta name="description" content="Login form. <?php echo $login_appname;?>">
       <meta name="author" content="<?php echo $copyright_authors_text; ?>">
       
+      <!-- FAVICON-->    
+	  <link rel="shortcut icon" href="assets/icon/favicon.png">
+	  
    <!-- CSS PROPIS -->
 
        <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/skeleton/css/bootstrap-select.min.css')?>"/>

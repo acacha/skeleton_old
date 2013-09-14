@@ -50,6 +50,16 @@ $config['default_realm'] = "mysql";
 */
 $config['maintenance_mode'] = true;
 
+
+/*
+|--------------------------------------------------------------------------
+| HTML HEADER METADATA DEFAULT VALUES
+|--------------------------------------------------------------------------
+*/
+$config['header_title'] = "Skeleton. Ebretic Enginyeria SL";
+$config['header_description'] = "Skeleton app description";
+$config['header_authors'] = "Sergi Tur Badenas";
+
 /*
 | -------------------------------------------------------------------------
 | Database Type
