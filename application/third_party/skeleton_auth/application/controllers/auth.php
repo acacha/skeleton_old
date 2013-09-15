@@ -43,13 +43,20 @@ class Auth extends CI_Controller {
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'skeleton_auth'), $this->config->item('error_end_delimiter', 'skeleton_auth'));
 
-		$this->lang->load('auth');
+		$default_language=$this->config->item('default_language', 'skeleton_auth');
+		//$this->lang->load('inventory', $default_language);	       
+		$this->skeleton_auth->lang->load('skeleton', $default_language);
+		$this->lang->load('ion_auth', $default_language);
+		$this->lang->load('auth', $default_language);
+		$this->lang->load('form_validation', $default_language);
+		
 		$this->load->helper('language');
 		
 		//GET REALMS FROM CONFIG
 		if ($this->config->item('realms','skeleton_auth')!="") {
 			$this->realms = explode(",",$this->config->item('realms','skeleton_auth'));
 		}
+		
 	}
 
 //redirect if needed, otherwise display the user list
@@ -106,8 +113,8 @@ function index()
 		}
 		
 		//validate form input
-		$this->form_validation->set_rules('identity', 'Identity', 'required');
-		$this->form_validation->set_rules('password', 'Password', 'required');
+		$this->form_validation->set_rules('identity', lang('Identity'), 'required');
+		$this->form_validation->set_rules('password', lang('Password'), 'required');
 
 		if ($this->form_validation->run() == true)
 		{

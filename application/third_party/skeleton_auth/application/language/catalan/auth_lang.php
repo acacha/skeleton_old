@@ -13,9 +13,10 @@
 */
 
 //LOGIN FORM
-$lang['login-form-greetings']   = 'Please, log in';
+$lang['login-form-greetings']   = 'Si us plau, entreu';
 $lang['User']   = 'Usuari';
 $lang['Password']   = 'Paraula de pas';
+$lang['Identity'] = 'Identitat';
 $lang['Register']   = 'Registrar';
 $lang['Login']   = 'Entrar';
 $lang['application_of'] = "és una aplicació d'";

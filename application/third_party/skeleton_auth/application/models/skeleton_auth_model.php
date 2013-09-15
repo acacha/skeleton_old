@@ -1014,9 +1014,16 @@ class Skeleton_auth_model extends CI_Model
 		//REMOVE USER FROM OTHER LDAP GROUPS:
 		$this->remove_from_group($ldap_roles_database_keys, $user->id);
 		
-		//TODO
-		//$this->post_login_session_initialitze($current_role_name);
+		$this->post_login_session_initialitze();
 		return TRUE;
+	}
+	
+	function post_login_session_initialitze() {
+		//SET DEFAULT LANGUAGE
+		if (!$this->session->userdata("current_language")) {
+			$this->session->set_userdata("current_language",
+										  $this->config->item('default_language','skeleton_auth'));
+		}		
 	}
 
 	/**
@@ -1081,6 +1088,8 @@ class Skeleton_auth_model extends CI_Model
 
 				$this->trigger_events(array('post_login', 'post_login_successful'));
 				$this->set_message('login_successful');
+				
+				$this->post_login_session_initialitze();
 				return TRUE;
 			}
 		}
