@@ -73,7 +73,7 @@ class Auth_Ldap {
         $this->ad_domain = $this->ci->config->item('ad_domain');
         $this->proxy_user = $this->ci->config->item('proxy_user');
         $this->proxy_pass = $this->ci->config->item('proxy_pass');
-        $this->roles = $this->ci->config->item('roles');
+        $this->roles = $this->ci->config->item('roles','skeleton_auth');
         $this->auditlog = $this->ci->config->item('auditlog');
         $this->member_attribute = $this->ci->config->item('member_attribute');
     }

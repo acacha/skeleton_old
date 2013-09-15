@@ -112,17 +112,14 @@ function index()
 		if ($this->form_validation->run() == true)
 		{
 			$realm = $this->input->post('realm');
-			log_message('debug', 'REALM: ' . $realm);
 			
 			switch ($realm) {
 				case "maintenance_mode":
-				
+					$this->_maintenance_mode();
 					break;
 				case "mysql":
 					//HARDCODED AS DEFAULT
-					log_message('debug', '********** BEFORE set Realm **************');
 					$this->skeleton_auth->skeleton_auth_model->setRealm("mysql");
-					log_message('debug', '********** AFTER set Realm **************');
 					break;
 					
 				case "ldap":
@@ -139,7 +136,6 @@ function index()
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
-				log_message('debug', '********** LOGIN OK **************');
 				redirect($this->after_succesful_login_page, 'refresh');
 			}
 			else
@@ -147,7 +143,6 @@ function index()
 				//if the login was un-successful
 				//redirect them back to the login page
 				$this->session->set_flashdata('message', $this->skeleton_auth->errors());
-				log_message('debug', '********** LOGIN NOT OK **************');
 				redirect($this->login_page, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
 			}
 			
@@ -833,6 +828,54 @@ function index()
 
 		$this->_render_page($this->edit_group_view, $this->data);
 	}
+
+
+	protected function _maintenance_mode() {
+		$maintenance_user= $this->config->item('maintenance_mode_user','skeleton_auth');
+		$maintenance_password= $this->config->item('maintenance_mode_password','skeleton_auth');
+			
+		//validate form input
+		$this->form_validation->set_rules('identity', 'Identity', 'required');
+		$this->form_validation->set_rules('password', 'Password', 'required');
+		
+		if ($this->form_validation->run() == true)	{
+				
+			//check maintenance LOGIN
+			if (( $this->input->post('identity') == $maintenance_user ) && ( $this->input->post('password') == $maintenance_password)) 			{
+				//if the login is successful redirect them back to the home page
+				$session_data = array(
+					'identity'             => $maintenance_user,
+					'username'             => $maintenance_user,
+					'email'                => $this->config->item('maintenance_mode_user_email','skeleton_auth'),
+					'user_id'              => $this->config->item('maintenance_mode_user_id','skeleton_auth'), //everyone likes to overwrite id so we'll use user_id
+					'old_last_login'       => "nothing"
+				);
+				$this->session->set_userdata($session_data);
+				redirect($this->after_succesful_login_page, 'refresh');
+			}
+			else {
+				//if the login was un-successful redirect them back to the login page
+				$this->session->set_flashdata('message', lang('maintenance_mode_login_error_message'));
+				redirect($this->login_page, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
+			}
+		}
+		else {
+			//the user is not logging in so display the login page
+			//set the flash data error message if there is one
+			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+				$this->data['identity'] = array('name' => 'identity',
+				'id' => 'identity',
+				'type' => 'text',
+				'value' => $this->form_validation->set_value('identity'),
+			);
+			$this->data['password'] = array('name' => 'password',
+					'id' => 'password',
+					'type' => 'password',
+				);
+				$this->_render_page($this->login_view, $this->data);
+			}
+		}
+	
 
 
 	function _get_csrf_nonce()

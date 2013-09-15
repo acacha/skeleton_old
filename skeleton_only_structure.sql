@@ -105,4 +105,61 @@ CREATE TABLE IF NOT EXISTS `users_groups` (
   KEY `fk_users_groups_groups1_idx` (`group_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `user_preferences` (
+  `user_preferencesId` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `language` enum('catalan','spanish','english') NOT NULL DEFAULT 'catalan',
+  `theme` enum('flexigrid','datatables','twitter-bootstrap') NOT NULL DEFAULT 'flexigrid',
+  `dialogforms` enum('n','y') NOT NULL DEFAULT 'n',
+  `description` text,
+  `entryDate` datetime NOT NULL,
+  `manualEntryDate` datetime NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `manualLast_update` datetime NOT NULL,
+  `creationUserId` int(11) DEFAULT NULL,
+  `lastupdateUserId` int(11) DEFAULT NULL,
+  `markedForDeletion` enum('n','y') NOT NULL DEFAULT 'n',
+  `markedForDeletionDate` datetime NOT NULL,
+  PRIMARY KEY (`user_preferencesId`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `organizational_unit` (
+  `organizational_unitId` int(11) NOT NULL AUTO_INCREMENT,
+  `externalCode` int(11) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `shortName` varchar(150) NOT NULL,
+  `description` text,
+  `entryDate` datetime NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `creationUserId` int(11) DEFAULT NULL,
+  `lastupdateUserId` int(11) DEFAULT NULL,
+  `location` int(11) DEFAULT NULL,
+  `markedForDeletion` enum('n','y') NOT NULL,
+  `markedForDeletionDate` datetime NOT NULL,
+  PRIMARY KEY (`organizational_unitId`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `location` (
+  `locationId` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  `shortName` varchar(150) NOT NULL,
+  `description` text,
+  `entryDate` datetime NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `creationUserId` int(11) DEFAULT NULL,
+  `lastupdateUserId` int(11) DEFAULT NULL,
+  `parentLocation` int(11) DEFAULT NULL,
+  `markedForDeletion` enum('n','y') NOT NULL,
+  `markedForDeletionDate` datetime NOT NULL,
+  PRIMARY KEY (`locationId`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Restriccions per la taula `users_groups`
+--
+ALTER TABLE `users_groups`
+  ADD CONSTRAINT `fk_users_groups_groups1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_users_groups_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
 -- Dump completed on 2013-09-13  7:33:11

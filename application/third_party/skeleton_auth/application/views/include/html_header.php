@@ -27,6 +27,25 @@
       
       <!-- END JS -->
       
+      <!-- BEGIN GROCERY CRUD CSS --> 
+      <?php if (isset($css_files)): ?>
+		<?php foreach((array) $css_files as $css_file): ?>
+			<link type="text/css" rel="stylesheet" href="<?php echo $css_file; ?>" />
+		<?php endforeach; ?>
+	  <?php endif; ?>
+      
+      <!-- END GROCERY CRUD CSS --> 
+      
+      <!-- BEGIN GROCERY CRUD  JS --> 
+      
+      <?php if (isset($js_files)): ?>
+	   <?php foreach($js_files as $js_file): ?>
+        <script src="<?php echo $js_file; ?>"></script>
+       <?php endforeach; ?>
+      <?php endif; ?>
+      
+      <!-- END GROCERY CRUD JS -->
+      
 <style type="text/css">
      body {
         padding-top: 60px;

@@ -952,6 +952,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 
 		$database_user=$this->get_user_by_username($identity);
+		
 		$email=$database_user->email;
 		$id=$database_user->id;
 		$last_login=$database_user->last_login;
@@ -976,7 +977,7 @@ class Skeleton_auth_model extends CI_Model
 	
 		$this->clear_login_attempts($identity);
 
-		if ($remember && $this->config->item('remember_users', 'ion_auth')) {
+		if ($remember && $this->config->item('remember_users', 'skeleton_auth')) {
 			$this->remember_user($user->id);
 		}
 		
@@ -989,9 +990,9 @@ class Skeleton_auth_model extends CI_Model
 		//CHECK IF ROL EXISTS AS GROUP IN DATABASE
 		if (! $this->_check_if_group_exists($current_role_name)) {
 			//ADD ROLE AS GROUP AT DATABASE
-			$group = $this->ion_auth->create_group($current_role_name, "Automatic group added as ldap inventory role");
+			$group = $this->create_group($current_role_name, "Automatic group added as ldap inventory role");
 			if(!$group) {
-				show_error($this->ion_auth->messages());
+				show_error($this->messages());
 			}
 		}
 		
@@ -1002,7 +1003,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 		
 		//USERS HAVE ONLY ON LDAP ROLE! -> DELETE OLD LDAP USERS GROUPS
-		$ldap_roles = (array) $this->config->item('roles');
+		$ldap_roles = (array) $this->config->item('roles','skeleton_auth');
 		$ldap_roles_without_current_role=array_diff($ldap_roles,(array) $current_role_name);
 		
 		$ldap_roles_database_keys=array();
@@ -2278,12 +2279,12 @@ class Skeleton_auth_model extends CI_Model
 	}
 	
 	function _get_rolename_byId($id) {		
-		$roles = (array) $this->config->item('roles');
+		$roles = (array) $this->config->item('roles', 'skeleton_auth');
 		return $roles[(int) $id];
 	}
 	
 	protected function _get_group_id_by_group_name ($groupname) {
-		$groups = $this->ion_auth->groups()->result();
+		$groups = $this->groups()->result();
 		foreach ($groups as $group) {
 			if ( $group->name == $groupname )
 				return $group->id;
@@ -2292,7 +2293,7 @@ class Skeleton_auth_model extends CI_Model
 	}
 	
 	protected function _check_if_user_group_exists($groupname) {
-		$usergroups=$this->ion_auth->get_users_groups()->result();
+		$usergroups=$this->get_users_groups()->result();
 		foreach ($usergroups as $usergroup) {
 			if ( $usergroup->name == $groupname ) {
 				return true;
@@ -2302,11 +2303,104 @@ class Skeleton_auth_model extends CI_Model
 	}
 	
 	protected function _check_if_group_exists($groupname) {
-		$groups = $this->ion_auth->groups()->result();
+		$groups = $this->groups()->result();
 		foreach ($groups as $group) {
 			if ( $group->name == $groupname )
 				return true;
 		}
+		return false;
+	}
+	
+	function get_user_theme($userid){
+		$this->db->select('theme');
+		$this->db->where('userId',$userid);
+		$query = $this->db->get('user_preferences');
+		if ($query->num_rows() > 0)
+			return $query->row()->theme;
+		else
+			return false;
+	}
+	
+	function get_user_dialogforms($userid){
+		$this->db->select('dialogforms');
+		$this->db->where('userId',$userid);
+		$query = $this->db->get('user_preferences');
+		if ($query->num_rows() > 0)
+			return $query->row()->dialogforms;
+		else
+			return false;
+	}
+	
+	function user_have_preferences ($userid) {
+		$this->db->where('userId',$userid);
+		$query = $this->db->get('user_preferences');
+		if ($query->num_rows() != 0)
+			return true;
+		return false;
+	}
+	
+	function get_main_organizational_unit_name_from_userid($userid){
+		
+		$unitid=$this->get_main_organizational_unit_from_userid($userid);
+		$this->db->select('name');
+		$this->db->where('organizational_unitId',$unitid);
+		$query = $this->db->get('organizational_unit');
+		if ($query->num_rows() > 0)
+			return $query->row()->name;
+		else
+			return "";
+
+	}
+	
+	function get_main_organizational_unit_from_userid($userid){
+		
+		$this->db->select('mainOrganizationaUnitId');
+		$this->db->where('id',$userid);
+		$query = $this->db->get('users');
+		return $query->row()->mainOrganizationaUnitId;
+	}
+	
+	function get_dropdown_values($table_name,$field_name,$primary_key=null,$order_by="asc") {
+		
+		$primary_key_field_name;
+		if ($primary_key==null)
+			$primary_key_field_name=$this->get_primary_key($table_name);
+		else
+			$primary_key_field_name=$primary_key;
+		
+		$this->db->select("$primary_key_field_name,$field_name");
+		$this->db->order_by($field_name, $order_by); 
+		$this->db->where("markedForDeletion", "n"); 
+		$query = $this->db->get($table_name);
+		if ($query->num_rows() != 0)
+			return $query->result();
+		return false;
+	}
+	
+	function get_primary_key($table_name) {
+		$fields = $this->db->field_data($table_name);
+		
+		foreach ($fields as $field)	{
+			if ($field->primary_key) {
+					return $field->name;
+			}
+		} 	
+		return false;
+	}
+	
+	function get_last_added_value($table_name,$primary_key=null) {
+		$primary_key_field_name;
+		if ($primary_key==null)
+			$primary_key_field_name=$this->get_primary_key($table_name);
+		else
+			$primary_key_field_name=$primary_key;
+		
+		$this->db->select($primary_key_field_name);
+		$this->db->order_by($primary_key_field_name, "desc");
+		$this->db->where("markedForDeletion", "n");
+		$query = $this->db->get($table_name);
+		if ($query->num_rows() != 0)
+			return $query->row()->$primary_key_field_name;
 		return false;
 	}
 }

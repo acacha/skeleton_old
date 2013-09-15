@@ -59,3 +59,5 @@ $lang['group_name_required'] 		= 'Group name is a required field';
 $lang['email_forgotten_password_subject']    = 'Forgotten Password Verification';
 $lang['email_new_password_subject']          = 'New Password';
 $lang['email_activation_subject']            = 'Account Activation';
+
+$lang['login_unsuccessful_not_allowed_role'] = "Correct login but user doesn't have any allowed role";

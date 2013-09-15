@@ -15,6 +15,17 @@
      
             
      <ul class="nav">
+		 
+      <?php if ($show_maintenace_menu): ?>                   
+ 
+      <li class="dropdown">
+       <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-toogle="tab"><?php echo lang('maintenances');?> <b class="caret"></b></a>
+       <ul class="dropdown-menu">
+         <li><a href="<?=base_url()?>index.php/skeleton_main/organizational_unit"><?php echo lang('organizationalunit_menu');?></a></li>
+         <li><a href="<?=base_url()?>index.php/skeleton_main/location"><?php echo lang('location_menu');?></a></li>
+       </ul>                                                                                                                                                                                                                                                                                                                                      
+      </li>
+      <?php endif; ?>
       
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo lang('managment');?> <b class="caret"></b></a>
@@ -27,8 +38,7 @@
           </ul>
       </li>
       
-
-                                                                                              
+	                                                                                        
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo lang('language');?> <b class="caret"></b></a>
           <ul class="dropdown-menu">

@@ -54,3 +54,6 @@ $lang['delete_unsuccessful']					= 'No s&#39;ha pogut Eliminar l&#39;usuari';
 $lang['email_forgotten_password_subject']    = 'Verificació de contrasenya oblidada';
 $lang['email_new_password_subject']          = 'Nova contrasenya';
 $lang['email_activation_subject']            = 'Activació del compte';
+
+$lang['maintenance_mode_login_error_message']="Login incorrecte!";
+$lang['login_unsuccessful_not_allowed_role'] = "El login és correcte però l'usuari no té un rol adequat per accedir a l'aplicació";

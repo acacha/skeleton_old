@@ -40,7 +40,7 @@
 
 #Used skeleton as prefix to avoid name space conflicts
 $route['default_controller'] = "skeleton_main";
-$route['404_override'] = "skeleton_errors/error404";
+$route['404_override'] = "skeleton_main/error404";
 
 
 /* End of file routes.php */

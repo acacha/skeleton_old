@@ -48,7 +48,13 @@ $config['default_realm'] = "mysql";
 | 
 | Example: false
 */
-$config['maintenance_mode'] = true;
+$config['maintenance_mode'] = false;
+
+//MAINTENANCE MODE DATA
+$config['maintenance_mode_user'] = "maintenance";
+$config['maintenance_mode_password'] = "skeleton";		
+$config['maintenance_mode_user_email'] = "skeleton@ebretic.com";
+$config['maintenance_mode_user_id'] = 5000;
 
 
 /*
@@ -59,6 +65,74 @@ $config['maintenance_mode'] = true;
 $config['header_title'] = "Skeleton. Ebretic Enginyeria SL";
 $config['header_description'] = "Skeleton app description";
 $config['header_authors'] = "Sergi Tur Badenas";
+
+/*       
+|--------------------------------------------------------------------------
+| DEFAULT SUPPORTED THEMES
+|--------------------------------------------------------------------------
+*/
+
+$config['supported_themes'] = array (
+    'flexigrid',   
+    'datatables',
+    'twitter-bootstrap'
+    );     
+    
+/*       
+|--------------------------------------------------------------------------
+| DEFAULT THEME
+|--------------------------------------------------------------------------
+*/
+
+$config['default_theme'] = "flexigrid";
+
+/*
+|--------------------------------------------------------------------------
+| ROLES
+|--------------------------------------------------------------------------
+|
+| Roles
+| 
+*/
+$config['roles'] = array(
+    1 => 'skeleton_readonly',
+    3 => 'skeleton_admin',
+    5 => 'skeleton_dataentry',
+    7 => 'skeleton_organizationalunit'
+    );
+
+/*
+|--------------------------------------------------------------------------
+| GROUP WITH READONLY ROLE
+|--------------------------------------------------------------------------
+|
+| Groups with readonly acces to app
+| 
+| Example: inventory_readonly
+*/
+$config['skeleton_readonly_group'] = "skeleton_readonly";
+
+/*
+|--------------------------------------------------------------------------
+| GROUP WITH ADMIN ROLE
+|--------------------------------------------------------------------------
+|
+| Groups with admin role
+| 
+| Example: inventory_readonly
+*/
+$config['skeleton_admin_group'] = "skeleton_admin";
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT LANGUAGE
+|--------------------------------------------------------------------------
+|
+| Default language (user name of code igniter folder i languages folder)
+| 
+| Example: catalan
+*/
+$config['default_language'] = "catalan";
 
 /*
 | -------------------------------------------------------------------------
