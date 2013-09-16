@@ -27,6 +27,7 @@ class Auth extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->load->add_package_path(APPPATH.'third_party/skeleton/application/');
 		$params = array('model' => $model);
 		$this->load->library('skeleton_auth',$params);
 			
