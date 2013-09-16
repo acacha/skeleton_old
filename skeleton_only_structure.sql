@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   `markedForDeletion` enum('n','y') NOT NULL,
   `markedForDeletionDate` datetime NOT NULL,
   PRIMARY KEY (`locationId`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Restriccions per la taula `users_groups`
