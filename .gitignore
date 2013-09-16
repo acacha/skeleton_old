@@ -13,5 +13,5 @@ application/logs/*
 !application/logs/.htaccess
 
 application/third_party/grocery-crud/
-application/third_party/skeleton_auth/application/config/auth_ldap.php
+application/third_party/image-crud/
 
