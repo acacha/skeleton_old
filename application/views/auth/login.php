@@ -13,7 +13,7 @@
 	  
    <!-- CSS PROPIS -->
 
-       <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/skeleton/css/bootstrap-select.min.css')?>"/>
+       <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/bootstrap-select.min.css')?>"/>
 
        
        <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
@@ -22,7 +22,7 @@
    <!-- JS PROPIS -->
        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
        <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-       <script src="<?php echo base_url('assets/skeleton/js/bootstrap-select.min.js')?>"></script>
+       <script src="<?php echo base_url('assets/js/bootstrap-select.min.js')?>"></script>
     
    <style type="text/css">
       body {
