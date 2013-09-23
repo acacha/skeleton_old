@@ -67,7 +67,17 @@
  <?php echo form_open(base_url('index.php/skeleton_auth/auth/forgot_password_'.$identity), array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
   <h3><?php echo lang('forgot_password_heading');?></h3>
   <p><?php echo sprintf(lang('forgot_password_subheading'),strtolower(lang($identity)));?></p>
-      
+      <p>
+       <select id="realms" class="selectpicker" name="realm">
+  		  <?php foreach( (array) $realms as $realm): ?>
+		   <?php if( $realm == $default_realm): ?>
+            <option value="<?php echo $realm; ?>" selected="selected"><?php echo $realm; ?></option>
+           <?php else: ?> 
+            <option value="<?php echo $realm; ?>" ><?php echo $realm; ?></option>
+           <?php endif; ?> 
+          <?php endforeach; ?>	
+       </select>
+      </p>
       <p>
           <input id="<?php echo $identity;?>" name="<?php echo $identity;?>" class="input-block-level" type="text" placeholder="<?php $lang_string="forgot_password_" . $identity . "_identity_label" ;echo lang($lang_string);?>">
       </p>

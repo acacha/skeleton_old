@@ -56,6 +56,12 @@ class Auth extends CI_Controller {
 			$this->realms = explode(",",$this->config->item('realms','skeleton_auth'));
 		}
 		
+		//GET FORGOT PASSSWORD REALMS FROM CONFIG
+		if ($this->config->item('forgot_password_realms','skeleton_auth')!="") {
+			$this->forgot_password_realms = explode(",",$this->config->item('forgot_password_realms','skeleton_auth'));
+		}
+		
+		
 	}
 
 //redirect if needed, otherwise display the user list
@@ -297,6 +303,8 @@ function index()
 		{
 			//set any errors and display the form
 			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+			$this->data['realms'] = $this->forgot_password_realms;
+	     	$this->data['default_realm'] = $this->config->item('default_forgot_password_realm', 'skeleton_auth');
 			$this->_render_page($this->forgot_password_view , $this->data);
 		}
 		else
