@@ -41,6 +41,28 @@ $config['default_realm'] = "mysql";
 
 /*
 |--------------------------------------------------------------------------
+| ACTIVE FORGOT PASSWORD REALMS
+|--------------------------------------------------------------------------
+|
+| Active Authentication Realms for forgot password. Supported mysql, ldap
+| 
+| Example: ldap,mysql
+*/
+$config['forgot_password_realms'] = "mysql,ldap";
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT FORGOT PASSWORD REALM
+|--------------------------------------------------------------------------
+|
+| Default realm at login box
+| 
+| Example: ldap
+*/
+$config['default_forgot_password_realm'] = "ldap";
+
+/*
+|--------------------------------------------------------------------------
 | MAINTENANCE MODE
 |--------------------------------------------------------------------------
 |
