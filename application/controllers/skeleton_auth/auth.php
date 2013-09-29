@@ -344,7 +344,7 @@ function index()
 			else
 			{
 				$this->session->set_flashdata('message', $this->skeleton_auth->errors());
-				//redirect($this->forgot_password_page. "_" . $identity, 'refresh');
+				redirect($this->forgot_password_page. "_" . $identity, 'refresh');
 			}
 		}
 	}
@@ -380,12 +380,12 @@ function index()
 			
 		if ( $num <= 0) {
 			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_not_found"),$identity));
-			//redirect($this->forgot_password_page . "_" . $identity, 'refresh');
+			redirect($this->forgot_password_page . "_" . $identity, 'refresh');
 		}
 			
 		if ( $num > 1) {
 			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_found_more_than_one"),$identity));
-			//redirect($this->forgot_password_page . "_" . $identity, 'refresh');
+			redirect($this->forgot_password_page . "_" . $identity, 'refresh');
 		}
 		return $identity_row;
 	}

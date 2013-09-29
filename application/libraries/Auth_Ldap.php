@@ -46,7 +46,10 @@ class Auth_Ldap {
 
         // Load the configuration
         $this->ci->load->config('auth_ldap');
-
+        
+        // Load the configuration
+        $this->ci->load->config('skeleton_auth');
+                   
         $this->_init();
     }
 
@@ -76,7 +79,12 @@ class Auth_Ldap {
         $this->roles = $this->ci->config->item('roles','skeleton_auth');
         $this->auditlog = $this->ci->config->item('auditlog');
         $this->member_attribute = $this->ci->config->item('member_attribute');
-        $this->alternativeEmailAttribute = $this->ci->config->item('alternativeEmailAttribute');
+        
+        $this->first_email_ldap_attribute = $this->ci->config->item('first_email_ldap_attribute','skeleton_auth');
+        $this->second_email_ldap_attribute = $this->ci->config->item('second_email_ldap_attribute','skeleton_auth');
+                
+                
+        
     }
 
     /**
@@ -186,15 +194,20 @@ class Auth_Ldap {
         log_message('debug', lang('successfully_bound').$this->proxy_user);
         
         $alternativeemailattribute = "";
-        if (isset($this->alternativeEmailAttribute)) {
-			$alternativeemailattribute= $this->ci->config->item('alternativeEmailAttribute');
+        if (isset($this->second_email_ldap_attribute)) {
+                $alternativeemailattribute= $this->second_email_ldap_attribute;
 		}
-        
+		
+        $first_email_ldap_attribute="email";
+        if (isset($this->first_email_ldap_attribute)) {
+                $first_email_ldap_attribute= $this->first_email_ldap_attribute;
+        }
+                                                
         if ($identity=="email")	{
 			if ($alternativeemailattribute != "") {
-				$filter = '(|(email='.$identity_value. ')('. $alternativeemailattribute . '='.$identity_value. '))';
+				$filter = '(|(' . $first_email_ldap_attribute . '='.$identity_value. ')('. $alternativeemailattribute . '='.$identity_value. '))';
 			} else {
-				$filter = '(email='.$identity_value. ')';
+				$filter = '(' .  $first_email_ldap_attribute . '='.$identity_value. ')';
 			}
 		}
 		else {

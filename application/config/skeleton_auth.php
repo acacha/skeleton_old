@@ -6,11 +6,11 @@
 | -------------------------------------------------------------------------
 | 
 */
-$config['login_appname'] = "Skeleton";
-$config['login_entity'] = "Ebretic Enginyeria SL";
+$config['login_appname'] = "Intranet";
+$config['login_entity'] = "Institut de l'Ebre";
 
-$config['copyright_url'] = "http://acacha.org/mediawiki/index.php/skeleton";
-$config['copyright_app_name'] = "Skeleton";
+$config['copyright_url'] = "http://acacha.org/mediawiki/index.php/ebre-escool";
+$config['copyright_app_name'] = "Ebre-escool Intranet";
 $config['copyright_entity_name'] = "Ebretic Enginyeria SL";
 $config['copyright_entity_url'] = "http://www.ebretic.com";
 $config['copyright_entity_url_name'] = "www.ebretic.com";
@@ -37,7 +37,7 @@ $config['realms'] = "mysql,ldap";
 | 
 | Example: ldap
 */
-$config['default_realm'] = "mysql";
+$config['default_realm'] = "ldap";
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +48,7 @@ $config['default_realm'] = "mysql";
 | 
 | Example: ldap,mysql
 */
-$config['forgot_password_realms'] = "mysql,ldap";
+$config['forgot_password_realms'] = "ldap";
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +63,40 @@ $config['default_forgot_password_realm'] = "ldap";
 
 /*
 |--------------------------------------------------------------------------
+| FIRST EMAIL LDAP ATTRIBUTE
+|--------------------------------------------------------------------------
+|
+| First Ldap attribute to use for fetching user personal email
+| 
+| Example: email
+*/
+$config['first_email_ldap_attribute'] = "highSchoolPersonalEmail";
+
+/*
+|--------------------------------------------------------------------------
+| SECOND EMAIL LDAP ATTRIBUTE      
+|--------------------------------------------------------------------------
+| 
+| Second Ldap attribute to use for fetching user personal email
+| 
+| Example: highSchoolPersonalEmail                                                            
+*/
+$config['second_email_ldap_attribute'] = "email";
+
+/*
+|--------------------------------------------------------------------------
+| EMAIL TO SEND FORGOTTEN PASSWORD
+|--------------------------------------------------------------------------
+|
+| Which ldap attribute user to send forgotten passwords
+| 
+| Example: email                                                            
+*/                             
+$config['email_to_send_forgotten_password'] = "highSchoolPersonalEmail";
+
+
+/*
+|--------------------------------------------------------------------------
 | MAINTENANCE MODE
 |--------------------------------------------------------------------------
 |
@@ -74,8 +108,8 @@ $config['maintenance_mode'] = false;
 
 //MAINTENANCE MODE DATA
 $config['maintenance_mode_user'] = "maintenance";
-$config['maintenance_mode_password'] = "skeleton";		
-$config['maintenance_mode_user_email'] = "skeleton@ebretic.com";
+$config['maintenance_mode_password'] = "ebre-escool";		
+$config['maintenance_mode_user_email'] = "intranet@iesebre.com";
 $config['maintenance_mode_user_id'] = 5000;
 
 
@@ -84,8 +118,8 @@ $config['maintenance_mode_user_id'] = 5000;
 | HTML HEADER METADATA DEFAULT VALUES
 |--------------------------------------------------------------------------
 */
-$config['header_title'] = "Skeleton. Ebretic Enginyeria SL";
-$config['header_description'] = "Skeleton app description";
+$config['header_title'] = "Intranet. Institut de l'Ebre";
+$config['header_description'] = "Intranet de l'Institut de l'Ebre";
 $config['header_authors'] = "Sergi Tur Badenas";
 
 /*       
@@ -117,10 +151,10 @@ $config['default_theme'] = "flexigrid";
 | 
 */
 $config['roles'] = array(
-    1 => 'skeleton_readonly',
-    3 => 'skeleton_admin',
-    5 => 'skeleton_dataentry',
-    7 => 'skeleton_organizationalunit'
+    1 => 'intranet_readonly',
+    3 => 'intranet_admin',
+    5 => 'intranet_dataentry',
+    7 => 'intranet_organizationalunit'
     );
 
 /*
@@ -132,7 +166,7 @@ $config['roles'] = array(
 | 
 | Example: skeleton_readonly
 */
-$config['skeleton_readonly_group'] = "skeleton_readonly";
+$config['skeleton_readonly_group'] = "intranet_readonly";
 
 /*
 |--------------------------------------------------------------------------
@@ -143,7 +177,7 @@ $config['skeleton_readonly_group'] = "skeleton_readonly";
 | 
 | Example: skeleton_admin
 */
-$config['skeleton_admin_group'] = "skeleton_admin";
+$config['skeleton_admin_group'] = "intranet_admin";
 
 /*
 |--------------------------------------------------------------------------
@@ -247,12 +281,12 @@ $config['max_rounds']     = 9;
  | The controller should check this function and act
  | appropriately. If this variable set to 0, there is no maximum.
  */
-$config['site_title']                 = "ebretic.com - skeleton";       // Site Title, example.com
-$config['organization']               = "Ebretic Enginyeria SL";       // Organization name, EBRETIC ENGINYERIA SL
-$config['app_name']                   = "Skeleton";       // Organization name, EBRETIC ENGINYERIA SL
-$config['admin_email']                = "localhost"; // Admin Email, admin@example.com
-$config['default_group']              = 'skeleton_readonly';           // Default group, use name
-$config['admin_group']                = 'skeleton_admin';             // Default administrators group, use name
+$config['site_title']                 = "Institut de l'Ebre - intranet";       // Site Title, example.com
+$config['organization']               = "Institut de l'Ebre";       // Organization name, EBRETIC ENGINYERIA SL
+$config['app_name']                   = "Intranet";       // Organization name, EBRETIC ENGINYERIA SL
+$config['admin_email']                = "maninfo@iesebre.com"; // Admin Email, admin@example.com
+$config['default_group']              = 'intranet_readonly';           // Default group, use name
+$config['admin_group']                = 'intranet_admin';             // Default administrators group, use name
 $config['identity']                   = 'username';             // A database column which is used to login with
 $config['min_password_length']        = 8;                   // Minimum Required Length of Password
 $config['max_password_length']        = 20;                  // Maximum Allowed Length of Password

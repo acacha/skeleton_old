@@ -40,7 +40,7 @@ class skeleton_auth
 	 *
 	 * @var array
 	 **/
-	public $_cache_user_in_group;
+public $_cache_user_in_group;
 
 	/**
 	 * __construct
@@ -92,6 +92,7 @@ class skeleton_auth
 		}
 
 		$this->skeleton_auth_model->trigger_events('library_constructor');
+		
 	}
 
 	/**
@@ -164,7 +165,10 @@ class skeleton_auth
 					
 					$this->email->clear();
 					$this->email->from($this->config->item('admin_email', 'skeleton_auth'), $this->config->item('site_title', 'skeleton_auth'));
-					$this->email->to($user->email);
+					
+					$email_to_send_forgotten_password = $this->config->item('email_to_send_forgotten_password', 'skeleton_auth');
+					$this->email->to($user->$email_to_send_forgotten_password);
+					
 					$this->email->subject($this->config->item('site_title', 'skeleton_auth') . ' - ' . $this->lang->line('email_forgotten_password_subject'));
 					$this->email->message($message);
 					
