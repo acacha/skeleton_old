@@ -26,7 +26,7 @@ $lang['account_creation_duplicate_username']	= 'Nom d&#39;usuari en ús o invàl
 // Password
 $lang['password_change_successful']				= 'Contrasenya canviada amb èxit';
 $lang['password_change_unsuccessful']			= 'No ha estat possible canviar la contrasenya';
-$lang['forgot_password_successful']				= 'Nova contrasenya enviada per email';
+$lang['forgot_password_successful']				= 'Nova contrasenya enviada per email correctament';
 $lang['forgot_password_unsuccessful']			= 'No ha estat possible crear una nova contrasenya';
 
 // Activation

@@ -52,7 +52,10 @@ class skeleton_auth
 	{
 		$this->load->config('skeleton_auth', TRUE);
 		$this->load->library('email');
-		$this->lang->load('ion_auth');
+		
+		$default_language=$this->config->item('default_language', 'skeleton_auth');
+		
+		$this->lang->load('ion_auth',$default_language);
 		$this->load->helper('cookie');
 		
 
@@ -132,12 +135,10 @@ class skeleton_auth
 	 **/
 	public function forgotten_password($identity,$identity_key="email",$realm="mysql")    //changed $email to $identity
 	{
-		echo "identity: " . $identity . "<br/>" ;
-		echo "identity_key: " . $identity_key . "<br/>" ;
+
 		$this->skeleton_auth_model->identity_column=$identity_key;
 		if ( $this->skeleton_auth_model->forgotten_password($identity,$identity_key,$realm) )   //changed
 		{
-			echo "Database changed Ok!";
 			// Get user information
 			$user = $this->where($identity_key, $identity)->users()->row();  //changed to get_user_by_identity from email
 
@@ -191,7 +192,6 @@ class skeleton_auth
 		}
 		else
 		{
-			echo "Database error!";
 			$this->set_error('forgot_password_unsuccessful');
 			return FALSE;
 		}

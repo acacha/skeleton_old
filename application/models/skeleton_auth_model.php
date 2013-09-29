@@ -238,7 +238,6 @@ class Skeleton_auth_model extends CI_Model
 	}
 	
 	private function _init_ldap() {
-		echo "<br/>Entering init_ldap...";
 		// Load the configuration
         $CI =& get_instance();
 
@@ -320,11 +319,6 @@ class Skeleton_auth_model extends CI_Model
 		{
 			return FALSE;
 		}
-		
-		echo "<br/>***************";
-		echo "<br/>PASSWORD: " . $password;
-		echo "<br/>SIMPLED HASHED PASSWORD SHA1: " . sha1($password);
-		echo "<br/>***************";
 
 		$this->trigger_events('extra_where');
 
@@ -334,9 +328,6 @@ class Skeleton_auth_model extends CI_Model
 		                  ->get($this->tables['users']);
 
 		$hash_password_db = $query->row();
-		
-		echo "<br/>hash_password_db: " . print_r($hash_password_db);
-		
 
 		if ($query->num_rows() !== 1)
 		{
@@ -353,36 +344,25 @@ class Skeleton_auth_model extends CI_Model
 
 			return FALSE;
 		}
-		
-		echo "<br/>Xivato!";
-		
+
 		// sha1
 		if ($this->store_salt)
 		{
-			echo "<br/>Xivato 1!";
 			$db_password = sha1($password . $hash_password_db->salt);
 		}
 		else
 		{
-			echo "<br/>Xivato 2!";
-			
 			$salt = substr($hash_password_db->password, 0, $this->salt_length);
-			echo "<br/>SALT: " . $salt;
-			echo "<br/>HASHED PASSWORD SHA1 WITH SALT: " . sha1($password . $salt);
+
 			$db_password =  $salt . substr(sha1($salt . $password), 0, -$this->salt_length);
 		}
-		echo "<br/>Xivato 3!";
-		
-		echo "<br/>hash_password_db->password: " . $hash_password_db->password;
-		echo "<br/>db_password: " . $db_password;
+
 		if($db_password == $hash_password_db->password)
 		{
-			echo "<br/>Xivato 4!";
 			return TRUE;
 		}
 		else
 		{
-			echo "<br/>Xivato 5!";
 			return FALSE;
 		}
 	}
@@ -545,6 +525,10 @@ class Skeleton_auth_model extends CI_Model
 		return FALSE;
 	}
 	
+	protected function generate_md5_hash($pwd)	{
+		return  "{MD5}".base64_encode( pack('H*', md5($pwd)));
+	}
+	
 	public function userHaveShadowAccount($dn) {
 		$return_value=false;
 		
@@ -554,21 +538,13 @@ class Skeleton_auth_model extends CI_Model
 			$search = ldap_search($this->ldapconn, $dn, $filter,$required_attributes);
         	$user = ldap_get_entries($this->ldapconn, $search);
         	
-        	echo "<br/>USER COUNT: " . $user["count"];
-        	echo "<br/>USER: " . print_r($user);
         	if ($user["count"] != 0) {		
-				print_r($user[0]["objectclass"]);
 				if (in_array("shadowAccount", $user[0]["objectclass"])) {
-					echo "<br/>***YES IS SHADOW ACCOUNT *** <br/>";
 					$return_value=true;	
 				}
 			}
 		}
 		return $return_value;
-	}
-	
-	protected function generate_md5_hash($pwd)	{
-		return  "{MD5}".base64_encode( pack('H*', md5($pwd)));
 	}
 	
 	/*! \brief Generate samba hashes
@@ -620,22 +596,14 @@ class Skeleton_auth_model extends CI_Model
 		// Using dn
 		$shadowAccountBool=true;
 		
-		echo "<br/>Before userHaveShadowAccount...";
 		$shadowAccountBool=$this->userHaveShadowAccount($dn);
-		echo "<br/>After userHaveShadowAccount...";
 		
 		//Generate HASH NEW PASS for posixAccount
 		$newpass= $this->generate_md5_hash($password);
 		
-		echo "<br/>Password: " . $password;
-		echo "<br/>MD5 password: ". $newpass;
-		
 		$attrs= array();
 		
 		$attrs= $this->generate_smb_nt_hash($password);
-		
-		echo "<br/>Windows hashes: ". $newpass;
-		
 		if(!count($attrs) || !is_array($attrs)){
 			show_error("Error: cannot generate SAMBA hash! ");
 			return(FALSE);    
@@ -649,7 +617,6 @@ class Skeleton_auth_model extends CI_Model
         }
         
         // Perform ldap operations
-        echo "<br/>Before changeLdapPassword!";
         return $this->changeLdapPassword($dn,$attrs);
 	}
 	
@@ -695,21 +662,15 @@ class Skeleton_auth_model extends CI_Model
 	
 	public function changeLdapPassword($user_dn,$attrs) {
 		
-		echo "<br/>Entering changeLdapPassword...";
 		$this->_init_ldap();
 		
 		if ($this->_bind()) {
-			echo "<br/>Bind Ok!";
-			echo "<br/>User DN: " . $user_dn;
-			echo "<br/>Attributes: " . print_r($attrs);
 			if (ldap_modify($this->ldapconn,$user_dn,$attrs) === false){
-				echo "<br/>Modify ERROR!";
 				$error = ldap_error($this->ldapconn);
 				$errno = ldap_errno($this->ldapconn);
 				show_error("Ldap error changing password: " . $errno . " - " . $error);
 				return false;
 			} else {
-				echo "<br/>Modify Ok!";
 				return true;
 			}
 		}
@@ -717,30 +678,19 @@ class Skeleton_auth_model extends CI_Model
 	}
 	
 	public function getDNByIdentity($identity,$basedn=null) {
-		echo "<br/>Entering getDNByIdentity...";
 		
-		echo "<br/>Before _init_ldap...";
 		$this->_init_ldap();
-		echo "<br/>After _init_ldap...";
 		
 		if ($this->_bind()) {
-			echo "<br/>Bind ok...";
 			$needed_attrs = array('dn');
 			$filter = '(uid='.$identity.')';
 			if ($basedn == null)
 				$basedn = $this->basedn;
-			
-			echo "<br/>BASEDN: " . $basedn . "<br/>";	
-			echo "<br/>FILTER: " .$filter . "<br/>";	
-			echo "<br/>needed_attrs: " . print_r($needed_attrs) . "<br/>";	
-				
 			$search = ldap_search($this->ldapconn, $basedn, $filter, 
                 $needed_attrs);
         
 			$entries = ldap_get_entries($this->ldapconn, $search);
 	
-			
-			echo "<br/>ENTRIES COUNT: " .$entries['count'] . "<br/>";	
 			if($entries['count'] != 0) {
 				$dn = $entries[0]['dn'];
 				return $dn;
@@ -754,31 +704,23 @@ class Skeleton_auth_model extends CI_Model
 	
 	public function reset_password_ldap($identity, $new_password) {
 		
-		echo "<br/> Entering reset password Ldap";
 		
 		$this->trigger_events('pre_change_password');
 		
-		echo "<br/> RESET PASSWORD IDENTITY: " . $identity;
 		
 		$dn = $this->getDNByIdentity($identity);
 		
-		echo "<br/> DN: " . $dn;
 		
-		echo "<br/> BEFORE change_ldap_password";
 		$return_value = $this->change_ldap_password($dn, $new_password);
-		echo "<br/> AFTER change_ldap_password";
 		
-		echo "<br/> RETURN VALUE: " . $return_value;
 				
 		if ($return_value)
 		{
-			echo "<br/>Change password succesful";
 			$this->trigger_events(array('post_change_password', 'post_change_password_successful'));
 			$this->set_message('password_change_successful');
 		}
 		else
 		{
-			echo "<br/>Change password UNSUCCESFUL";
 			$this->trigger_events(array('post_change_password', 'post_change_password_unsuccessful'));
 			$this->set_error('password_change_unsuccessful');
 		}
@@ -846,7 +788,6 @@ class Skeleton_auth_model extends CI_Model
 	 * @author Mathew
 	 **/
 	public function reset_password($identity, $new_password) {
-		echo "<br/>Entering skeleton_auth_model->reset_password!<br/>";
 		$query = $this->db->select('forgotten_password_realm')
 		                  ->where($this->identity_column, $identity)
 		                  ->limit(1)
@@ -860,7 +801,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 		
 		$realm= $query->row()->forgotten_password_realm;
-		echo "<br/>REALM:" . $realm . "<br/>";
+
 		if ($realm == "ldap")  {
 			return $this->reset_password_ldap($identity, $new_password);
 		} else {
@@ -997,7 +938,6 @@ class Skeleton_auth_model extends CI_Model
 	 **/
 	public function forgotten_password($identity,$identity_column="",$realm="mysql")
 	{
-		echo "MODEL identity: " . $identity . "<br/>" ;
 		if (empty($identity))
 		{
 			$this->trigger_events(array('post_forgotten_password', 'post_forgotten_password_unsuccessful'));
@@ -1032,16 +972,9 @@ class Skeleton_auth_model extends CI_Model
 		} else {
 			$identity_database_column=$identity_column;
 		}
-		
-		echo "TABLE: " . $this->tables['users'] . "<br/>" ;
-		echo "UPDATE: " . $update . "<br/>" ;
-		echo "identity_database_column: " . $identity_database_column . "<br/>" ;
-		echo "identity: " . $identity . "<br/>" ;
-		
+
 		$this->db->update($this->tables['users'], $update, array( $identity_database_column => $identity));
 		
-		echo "LAST QUERY: " . $this->db->last_query() . "<br/>" ;
-
 		$return = $this->db->affected_rows() == 1;
 
 		if ($return)
@@ -1143,12 +1076,7 @@ class Skeleton_auth_model extends CI_Model
 		// IP Address
 		$ip_address = $this->_prepare_ip($this->input->ip_address());
 		$salt       = $this->store_salt ? $this->salt() : FALSE;
-		
-		echo "<br/>password : " .$password . "<br/>";
-		echo "<br/>salt : " . $salt. "<br/>";
 		$password   = $this->hash_password($password, $salt);
-		echo "<br/>hashed password : " . $password. "<br/>";
-
 
 		// Users table.
 		$data = array(
@@ -1225,7 +1153,7 @@ class Skeleton_auth_model extends CI_Model
 			$email=$this->auth_ldap->get_email($identity);
 			
 			if ($password=="") {
-				$password=substr(md5(uniqid()), 0, 8);
+				$password=substr(sha1(uniqid()), 0, 8);
 			}
 			
 			$id=$this->register($identity, $password, $email, $additional_data);
@@ -1240,7 +1168,6 @@ class Skeleton_auth_model extends CI_Model
 	 */
 	public function login_ldap($identity, $password, $remember = FALSE)
 	{
-		echo "<br/>Entering login Ldap";
 		$this->trigger_events('pre_login');
 		
 		if (empty($identity) || empty($password))
@@ -1254,7 +1181,6 @@ class Skeleton_auth_model extends CI_Model
 		
 		$return_value=$this->auth_ldap->login($identity, $password);
 		
-		echo "<br/>*** return_value: " . $return_value;
 		switch ($return_value) {
 			case 1:
 				break;
@@ -1272,8 +1198,6 @@ class Skeleton_auth_model extends CI_Model
 				break;
 		}
 		
-		echo "<br/>After login!";
-		
 		//AT THIS POINT USER HAS LOGGED CORRECTLY AT LDAP
 		
 		//CHECK IF ACCOUNT HAS TO BE LOCKED BY TOO MANY AUTH ATTEMPTS
@@ -1284,11 +1208,9 @@ class Skeleton_auth_model extends CI_Model
 
 			$this->trigger_events('post_login_unsuccessful');
 			$this->set_error('login_timeout');
-			echo "<br/>User IS locked!";
+
 			return FALSE;
 		}
-		
-		echo "<br/>User is not locked!";
 		
 		//CORRECT LOGIN. SET DATA:
 		
@@ -1298,12 +1220,8 @@ class Skeleton_auth_model extends CI_Model
 		$username=$identity;
 		$user = new stdClass;
 		
-		echo "<br/>BEFORE add_user_ifnotexists!";
-		
 		// ADD USER TO users table if not exists
 		$this->add_user_ifnotexists($identity,$password);	
-		
-		echo "<br/>add_user_ifnotexists FINISHED OK!";
 		
 		if (!$this->username_check($identity)) {
 			//NOT EXISTS -> ADD/REGISTER
@@ -1375,11 +1293,7 @@ class Skeleton_auth_model extends CI_Model
 		//REMOVE USER FROM OTHER LDAP GROUPS:
 		$this->remove_from_group($ldap_roles_database_keys, $user->id);
 		
-		echo "<br/>remove_from_group FINISHED OK!";
-		
 		$this->post_login_session_initialitze();
-		
-		echo "<br/>SKELETON_AUTH__MODEL LOGIN FINISHED OK!";
 		return TRUE;
 	}
 	
@@ -1399,8 +1313,6 @@ class Skeleton_auth_model extends CI_Model
 	 **/
 	public function login_mysql($identity, $password, $remember=FALSE)
 	{
-		echo "<br/>identity: " . $identity;
-		echo "<br/>password: " . $password;
 		$this->trigger_events('pre_login');
 
 		if (empty($identity) || empty($password))
@@ -1429,15 +1341,9 @@ class Skeleton_auth_model extends CI_Model
 
 		if ($query->num_rows() === 1)
 		{
-			echo "<br/>User found!";
 			$user = $query->row();
-			echo "<br/>User found!";
-			echo "<br/>password: " . $password;
-			echo "<br/>User id: " . $user->id;
-			
-			
+
 			$password = $this->hash_password_db($user->id, $password);
-			echo "<br/>password: " . $password;
 			if ($password === TRUE)
 			{
 				if ($user->active == 0)

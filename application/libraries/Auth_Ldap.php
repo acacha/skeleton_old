@@ -90,7 +90,6 @@ class Auth_Ldap {
          * For now just pass this along to _authenticate.  We could do
          * something else here before hand in the future.
          */
-		echo "<br>Entering login in Auth Ldap!..";
         $user_info = $this->_authenticate($username,$password);
         
         if(!$user_info) {
@@ -206,19 +205,10 @@ class Auth_Ldap {
 		if ($alternativeemailattribute != "") {
 			array_push($required_attributes,$alternativeemailattribute);
 		}
-
-        
-        echo "<br/>basedn: " . $this->basedn . "<br/>";
-        echo "<br/>filter: " . $filter . "<br/>";
-        echo "<br/>attributes: " . print_r($required_attributes) . "<br/>";
         
         $search = ldap_search($this->ldapconn, $this->basedn, $filter,$required_attributes);
         
         $entries = ldap_get_entries($this->ldapconn, $search);
-        
-        echo "Entries found: " . $entries["count"] . "<br/>";
-        
-        echo "Entries: " . print_r($entries);
         
         $value = (isset($entries[0]["uid"][0])) ? $entries[0]["uid"][0] : "";
         
@@ -232,7 +222,6 @@ class Auth_Ldap {
      * @return array 
      */
     private function _authenticate($username, $password) {
-		echo "<br/>Entering authenticate";
         $needed_attrs = array('dn', 'cn', $this->login_attribute);
         
         foreach($this->hosts as $host) {
@@ -268,32 +257,18 @@ class Auth_Ldap {
             log_message('error', lang('unable_anonymous'));
             show_error(lang('unable_bind'));
         }
-		echo "<br/>BIND OK";
         log_message('debug', lang('successfully_bound').$username);
         $filter = '('.$this->login_attribute.'='.$username.')';
-        
-        
-        echo "<br/>HOSTS:" . print_r($this->hosts);
-        echo "<br/>BASE DN:" . $this->basedn;
-        echo "<br/>FILTER:" . $filter;
-        echo "<br/>BASE DN:" . $this->basedn;
-        echo "<br/><br/>ATTRIBUTES:" . print_r(array('dn', $this->login_attribute, 'cn')) . "<br/>";
-        
         
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, 
                 array('dn', $this->login_attribute, 'cn'));
         $entries = ldap_get_entries($this->ldapconn, $search);
         
-        echo "<br/>ENTRIES: " . $entries['count'];
-
         if($entries['count'] != 0) {
 			$binddn = $entries[0]['dn'];
-			echo "<br/>BIND DN:" . $binddn;
-			echo "<br/>password:" . $password;
             // Now actually try to bind as the user
-			$bind = ldap_bind($this->ldapconn, $binddn, $password);
+			$bind = @ldap_bind($this->ldapconn, $binddn, $password);
 			if(! $bind) {
-				echo "<br/>ERROR BINDING USER!!!!!!!";
 				$this->_audit(lang('failed_login') . $username. lang('from')." ".$_SERVER['REMOTE_ADDR']);
 				return FALSE;
 			}
@@ -346,13 +321,8 @@ class Auth_Ldap {
      * @return int
      */
     private function _get_role($username) {
-		echo "<br/>Entering _get_role";
-		echo "<br/>Username: " . $username;
         $filter = '('.$this->member_attribute.'='.$username.')';
-        
-        echo "<br/>Basedn: " . $this->basedn;
-        echo "<br/>Filter: " . $filter;
-        
+
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, array('cn'));
         if(! $search ) {
             log_message('error', lang('error_searching_groups').ldap_error($this->ldapconn));
@@ -360,12 +330,8 @@ class Auth_Ldap {
         }
         $results = ldap_get_entries($this->ldapconn, $search);
         
-        echo "<br/>NUMBER OF RESULTS: " . $results['count'];
-        echo "<br/>ROLES: " . print_r($this->roles);
         if($results['count'] != 0) {
-            for($i = 0; $i < $results['count']; $i++) {
-				echo "<br/>ROLE: " . $results[$i]['cn'][0];
-				
+            for($i = 0; $i < $results['count']; $i++) {				
                 $role = array_search($results[$i]['cn'][0], $this->roles);
                 if($role !== FALSE) {
                     return $role;
