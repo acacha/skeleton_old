@@ -92,7 +92,7 @@ $config['second_email_ldap_attribute'] = "email";
 | 
 | Example: email                                                            
 */                             
-$config['email_to_send_forgotten_password'] = "highSchoolPersonalEmail";
+$config['email_to_send_forgotten_password'] = "secondary_email";
 
 
 /*

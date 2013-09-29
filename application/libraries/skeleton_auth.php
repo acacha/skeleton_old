@@ -136,16 +136,16 @@ public $_cache_user_in_group;
 	 **/
 	public function forgotten_password($identity,$identity_key="email",$realm="mysql")    //changed $email to $identity
 	{
-
 		$this->skeleton_auth_model->identity_column=$identity_key;
 		if ( $this->skeleton_auth_model->forgotten_password($identity,$identity_key,$realm) )   //changed
 		{
 			// Get user information
-			$user = $this->where($identity_key, $identity)->users()->row();  //changed to get_user_by_identity from email
-
+			$this->db->where(array( $identity_key => $identity));
+			$this->db->or_where(array( "secondary_email" => $identity));			
+			$user = $this->users()->row();//changed to get_user_by_identity from email
+			
 			if ($user)
 			{
-				
 				$data = array(
 					'identity'		=> $user->{$this->config->item('identity', 'skeleton_auth')},
 					'forgotten_password_code' => $user->forgotten_password_code

@@ -363,7 +363,7 @@ class Auth_Ldap {
 	public function get_additional_data($username) 	{
 		$filter = '('.$this->login_attribute.'='.$username.')';
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, 
-                array('dn', 'givenname', 'sn','homephone','ou'));
+                array('dn', 'givenname', 'sn','homephone','ou','highSchoolPersonalEmail'));
         if(! $search ) {
             log_message('error', lang('error_searching_groups').ldap_error($this->ldapconn));
             show_error(lang('no_groups').ldap_error($this->ldapconn));
@@ -376,6 +376,7 @@ class Auth_Ldap {
 			$last_name=null;
 			$phone=null;
 			$company=null;
+			$highSchoolPersonalEmail=null;
 			if (array_key_exists('givenname', $results[0]))
 				$first_name=$results[0]['givenname'][0];
 			if (array_key_exists('sn', $results[0]))
@@ -384,11 +385,14 @@ class Auth_Ldap {
 				$phone=$results[0]['homephone'][0];
 			if (array_key_exists('ou', $results[0]))
 				$company=$results[0]['ou'][0];
+			if (array_key_exists('highschoolpersonalemail', $results[0]))
+				$highSchoolPersonalEmail=$results[0]['highschoolpersonalemail'][0];	
 			return array(
 					"first_name" => $first_name,
 					"last_name"  => $last_name,
 					"phone"      => $phone,
-					"company"      => $company
+					"company"    => $company,
+					"secondary_email" => $highSchoolPersonalEmail
 					);
         }
         return false;

@@ -262,6 +262,7 @@ class Skeleton_auth_model extends CI_Model
         $this->roles = $CI->config->item('roles');
         $this->auditlog = $CI->config->item('auditlog');
         $this->member_attribute = $CI->config->item('member_attribute');
+        
     }
 
 	/**
@@ -883,9 +884,11 @@ class Skeleton_auth_model extends CI_Model
 		}
 
 		$this->trigger_events('extra_where');
-
-		return $this->db->where('username', $username)
-		                ->count_all_results($this->tables['users']) > 0;
+		
+		$users_found = $this->db->where('username', $username)
+		                ->count_all_results($this->tables['users']);
+		$result= $users_found > 0;
+		return $result;
 	}
 
 	/**
@@ -943,7 +946,6 @@ class Skeleton_auth_model extends CI_Model
 			$this->trigger_events(array('post_forgotten_password', 'post_forgotten_password_unsuccessful'));
 			return FALSE;
 		}
-
 		//All some more randomness
 		$activation_code_part = "";
 		if(function_exists("openssl_random_pseudo_bytes")) {
@@ -972,8 +974,10 @@ class Skeleton_auth_model extends CI_Model
 		} else {
 			$identity_database_column=$identity_column;
 		}
-
-		$this->db->update($this->tables['users'], $update, array( $identity_database_column => $identity));
+		
+		$this->db->where(array( $identity_database_column => $identity));
+		$this->db->or_where(array( "secondary_email" => $identity));
+		$this->db->update($this->tables['users'], $update);
 		
 		$return = $this->db->affected_rows() == 1;
 
@@ -981,7 +985,7 @@ class Skeleton_auth_model extends CI_Model
 			$this->trigger_events(array('post_forgotten_password', 'post_forgotten_password_successful'));
 		else
 			$this->trigger_events(array('post_forgotten_password', 'post_forgotten_password_unsuccessful'));
-
+				
 		return $return;
 	}
 
@@ -1155,7 +1159,6 @@ class Skeleton_auth_model extends CI_Model
 			if ($password=="") {
 				$password=substr(sha1(uniqid()), 0, 8);
 			}
-			
 			$id=$this->register($identity, $password, $email, $additional_data);
 		}	
 	}
@@ -1701,7 +1704,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 
 		$this->response = $this->db->get($this->tables['users']);
-
+		
 		return $this;
 	}
 
