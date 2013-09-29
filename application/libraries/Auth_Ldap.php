@@ -76,6 +76,7 @@ class Auth_Ldap {
         $this->roles = $this->ci->config->item('roles','skeleton_auth');
         $this->auditlog = $this->ci->config->item('auditlog');
         $this->member_attribute = $this->ci->config->item('member_attribute');
+        $this->alternativeEmailAttribute = $this->ci->config->item('alternativeEmailAttribute');
     }
 
     /**
@@ -89,7 +90,7 @@ class Auth_Ldap {
          * For now just pass this along to _authenticate.  We could do
          * something else here before hand in the future.
          */
-
+		echo "<br>Entering login in Auth Ldap!..";
         $user_info = $this->_authenticate($username,$password);
         
         if(!$user_info) {
@@ -147,6 +148,82 @@ class Auth_Ldap {
         }
         return TRUE;
     }
+    
+    public function check_identity_ldap($identity="email",$identity_value) {
+       
+        foreach($this->hosts as $host) {
+            $this->ldapconn = ldap_connect($host);
+            if($this->ldapconn) {
+               break;
+            }else {
+                log_message('info', lang('error_connecting_to'). ' ' .$uri);
+            }
+        }
+        // At this point, $this->ldapconn should be set.  If not... DOOM!
+        if(! $this->ldapconn) {
+            log_message('error', lang('could_not_connect_to_ldap'));
+            show_error(lang('error_connecting_to_ldap'));
+        }
+
+        // We've connected, now we can attempt the login...
+        // These to ldap_set_options are needed for binding to AD properly
+        // They should also work with any modern LDAP service.
+        ldap_set_option($this->ldapconn, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($this->ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        
+        // Find the DN of the user we are binding as
+        // If proxy_user and proxy_pass are set, use those, else bind anonymously
+        if($this->proxy_user) {
+            $bind = @ldap_bind($this->ldapconn, $this->proxy_user, $this->proxy_pass);
+        }else {
+            $bind = @ldap_bind($this->ldapconn);
+        }
+
+        if(!$bind){
+            log_message('error', lang('unable_anonymous'));
+            show_error(lang('unable_bind'));
+        }
+
+        log_message('debug', lang('successfully_bound').$this->proxy_user);
+        
+        $alternativeemailattribute = "";
+        if (isset($this->alternativeEmailAttribute)) {
+			$alternativeemailattribute= $this->ci->config->item('alternativeEmailAttribute');
+		}
+        
+        if ($identity=="email")	{
+			if ($alternativeemailattribute != "") {
+				$filter = '(|(email='.$identity_value. ')('. $alternativeemailattribute . '='.$identity_value. '))';
+			} else {
+				$filter = '(email='.$identity_value. ')';
+			}
+		}
+		else {
+			$filter = '(uid='.$identity_value. ')';
+		}
+		
+		$required_attributes=array($identity,"uid");
+		if ($alternativeemailattribute != "") {
+			array_push($required_attributes,$alternativeemailattribute);
+		}
+
+        
+        echo "<br/>basedn: " . $this->basedn . "<br/>";
+        echo "<br/>filter: " . $filter . "<br/>";
+        echo "<br/>attributes: " . print_r($required_attributes) . "<br/>";
+        
+        $search = ldap_search($this->ldapconn, $this->basedn, $filter,$required_attributes);
+        
+        $entries = ldap_get_entries($this->ldapconn, $search);
+        
+        echo "Entries found: " . $entries["count"] . "<br/>";
+        
+        echo "Entries: " . print_r($entries);
+        
+        $value = (isset($entries[0]["uid"][0])) ? $entries[0]["uid"][0] : "";
+        
+        return array("count" => $entries['count'] , "value" => $value );
+    }
 
     /**
      * @access private
@@ -155,6 +232,7 @@ class Auth_Ldap {
      * @return array 
      */
     private function _authenticate($username, $password) {
+		echo "<br/>Entering authenticate";
         $needed_attrs = array('dn', 'cn', $this->login_attribute);
         
         foreach($this->hosts as $host) {
@@ -190,18 +268,32 @@ class Auth_Ldap {
             log_message('error', lang('unable_anonymous'));
             show_error(lang('unable_bind'));
         }
-
+		echo "<br/>BIND OK";
         log_message('debug', lang('successfully_bound').$username);
         $filter = '('.$this->login_attribute.'='.$username.')';
+        
+        
+        echo "<br/>HOSTS:" . print_r($this->hosts);
+        echo "<br/>BASE DN:" . $this->basedn;
+        echo "<br/>FILTER:" . $filter;
+        echo "<br/>BASE DN:" . $this->basedn;
+        echo "<br/><br/>ATTRIBUTES:" . print_r(array('dn', $this->login_attribute, 'cn')) . "<br/>";
+        
+        
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, 
                 array('dn', $this->login_attribute, 'cn'));
         $entries = ldap_get_entries($this->ldapconn, $search);
+        
+        echo "<br/>ENTRIES: " . $entries['count'];
 
         if($entries['count'] != 0) {
 			$binddn = $entries[0]['dn'];
+			echo "<br/>BIND DN:" . $binddn;
+			echo "<br/>password:" . $password;
             // Now actually try to bind as the user
-			$bind = @ldap_bind($this->ldapconn, $binddn, $password);
+			$bind = ldap_bind($this->ldapconn, $binddn, $password);
 			if(! $bind) {
+				echo "<br/>ERROR BINDING USER!!!!!!!";
 				$this->_audit(lang('failed_login') . $username. lang('from')." ".$_SERVER['REMOTE_ADDR']);
 				return FALSE;
 			}
@@ -254,16 +346,26 @@ class Auth_Ldap {
      * @return int
      */
     private function _get_role($username) {
-    
+		echo "<br/>Entering _get_role";
+		echo "<br/>Username: " . $username;
         $filter = '('.$this->member_attribute.'='.$username.')';
+        
+        echo "<br/>Basedn: " . $this->basedn;
+        echo "<br/>Filter: " . $filter;
+        
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, array('cn'));
         if(! $search ) {
             log_message('error', lang('error_searching_groups').ldap_error($this->ldapconn));
             show_error(lang('no_groups').ldap_error($this->ldapconn));
         }
         $results = ldap_get_entries($this->ldapconn, $search);
+        
+        echo "<br/>NUMBER OF RESULTS: " . $results['count'];
+        echo "<br/>ROLES: " . print_r($this->roles);
         if($results['count'] != 0) {
             for($i = 0; $i < $results['count']; $i++) {
+				echo "<br/>ROLE: " . $results[$i]['cn'][0];
+				
                 $role = array_search($results[$i]['cn'][0], $this->roles);
                 if($role !== FALSE) {
                     return $role;

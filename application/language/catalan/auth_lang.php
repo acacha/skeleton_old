@@ -146,6 +146,7 @@ $lang['forgot_password_submit_btn']              = 'Enviar';
 $lang['forgot_password_validation_email_label']  = 'Adreça de correu electrònic';
 $lang['forgot_password_validation_username_label']  = "Nom d'usuari";
 $lang['forgot_password_username_identity_label'] = "Nom d'usuari";
+$lang['forgot_password_username_realms_label'] = "Reialme";
 $lang['forgot_password_email_identity_label']    = 'Correu electrònic';
 $lang['forgot_password_identity_not_found']    = 'El %s no pertany a cap usuari de la base de dades!';
 $lang['forgot_password_identity_found_more_than_one'] = "Hi ha més d'un usuari amb aquest %s. Aviseu al administrador de la base de dades per corregir l'error";

@@ -20,6 +20,8 @@ class Auth extends CI_Controller {
     public $create_group_view ="auth/create_group";    
     public $edit_group_view = "auth/edit_group";
     
+    public $default_language = "catalan";
+    
     //Default accepted realms
     public $realms = "mysql,ldap";    
 
@@ -30,6 +32,8 @@ class Auth extends CI_Controller {
 		$this->load->add_package_path(APPPATH.'third_party/skeleton/application/');
 		$params = array('model' => $model);
 		$this->load->library('skeleton_auth',$params);
+		
+		$this->load->library('Auth_Ldap');
 			
 		$this->load->library('form_validation');
 		$this->load->helper('url');
@@ -42,12 +46,12 @@ class Auth extends CI_Controller {
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'skeleton_auth'), $this->config->item('error_end_delimiter', 'skeleton_auth'));
 
-		$default_language=$this->config->item('default_language', 'skeleton_auth');
-		//$this->lang->load('inventory', $default_language);	       
-		$this->skeleton_auth->lang->load('skeleton', $default_language);
-		$this->lang->load('ion_auth', $default_language);
-		$this->lang->load('auth', $default_language);
-		$this->lang->load('form_validation', $default_language);
+		$this->default_language= $this->config->item('default_language', 'skeleton_auth');
+		
+		$this->skeleton_auth->lang->load('skeleton', $this->default_language);
+		$this->lang->load('ion_auth', $this->default_language);
+		$this->lang->load('auth', $this->default_language);
+		$this->lang->load('form_validation', $this->default_language);
 		
 		$this->load->helper('language');
 		
@@ -148,14 +152,16 @@ function index()
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
+				echo "<br/>LOGIN OK!";
 				redirect($this->after_succesful_login_page, 'refresh');
 			}
 			else
 			{
+				echo "<br/>LOGIN ERROR!";
 				//if the login was un-successful
 				//redirect them back to the login page
 				$this->session->set_flashdata('message', $this->skeleton_auth->errors());
-				redirect($this->login_page, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
+				//redirect($this->login_page, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
 			}
 			
 		}
@@ -287,16 +293,20 @@ function index()
 	
 	protected function _forgot_password_by_identity($identity="email") {	
 		
+		echo "<br/>IDENTITY: " . $identity . "<br/>";
+		
 		$this->data['identity']="email";
 		$this->data['alternative_identity']="username";
 		
 		if ($identity == "username" ) {
 			$this->form_validation->set_rules('username', $this->lang->line('forgot_password_validation_username_label'), 'required');		
+			$this->form_validation->set_rules('realm', $this->lang->line('forgot_password_validation_realms_label'), 'required');		
 			$this->data['identity']="username";
 			$this->data['alternative_identity']="email";	
 		}
 		else {
 			$this->form_validation->set_rules('email', $this->lang->line('forgot_password_validation_email_label'), 'required|valid_email');
+			$this->form_validation->set_rules('realm', $this->lang->line('forgot_password_validation_realms_label'), 'required');		
 		}
 			
 		if ($this->form_validation->run() == false)
@@ -309,28 +319,51 @@ function index()
 		}
 		else
 		{
-		    
-		    //IF IDENTITY (USERNAME OR EMAIL) is not in database come 
-		    //back to forgot_password form with error message
-			$this->check_identity($identity);
-			
-			$config_tables = $this->config->item('tables', 'skeleton_auth');
-			$this->db->where($identity, $this->input->post($identity));
-			$identity_row = $this->db->limit('1')->get($config_tables['users'])->row();
-		
-			//run the forgotten password method to email an activation code to the user
-			$forgotten = $this->skeleton_auth->forgotten_password($identity_row->{$identity},$identity);
+			//Which realm to use?
+			$realm=$this->input->post("realm");
+			echo "<br/>REALM: " . $realm . "<br/>";
+
+			$identity_post_value=$this->input->post($identity);
+			$identity_value="";
+		    //CHECK IDENTITY: IF IDENTITY (USERNAME OR EMAIL) is not in database come back to forgot_password form with error message		    
+			if ($realm == "ldap" ) {
+				//CHeck identity. Search in Ldap username or email depending on identity variable If not redirect to forgot password page with error message
+				$username=$this->check_identity_ldap($identity);
+				//Be sure user is in mysql database to be able to insert forgotten password code!
+				// Similar to Ldap login, if first time user is added to mysql database
+				echo "xivato_00!";
+				echo "identity: " . $identity . "<br/>" ;
+				echo "username: " . $username . "<br/>" ;
+				$this->skeleton_auth->add_user_ifnotexists($username);
 	
+				
+				echo "xivato_01!";
+			} else {
+				//REALM=MySQL
+				echo "<br/>Processing realm MySQL...<br/>";
+				$identity_value = $this->check_identity($identity);
+			}
+			
+			echo "xivaton!<br/>";
+			// Same method for Ldap and Email realms. 
+			//run the forgotten password method to email an activation code to the user
+			echo "<br>*********************<br/>";
+			echo "identity_post_value: " . $identity_post_value . "<br/>" ;
+			echo "identity: " . $identity . "<br/>" ;
+			$forgotten = $this->skeleton_auth->forgotten_password($identity_post_value,$identity,$realm);
+			echo "xivaton despues!";
 			if ($forgotten)
 			{
+				echo "NO ERRORS!";
 				//if there were no errors
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
 				redirect($this->login_page, 'refresh'); //we should display a confirmation page here instead of the login page
 			}
 			else
 			{
+				echo "ERRORS!";
 				$this->session->set_flashdata('message', $this->skeleton_auth->errors());
-				redirect($this->forgot_password_page. "_" . $identity, 'refresh');
+				//redirect($this->forgot_password_page. "_" . $identity, 'refresh');
 			}
 		}
 	}
@@ -356,32 +389,62 @@ function index()
 	}
 	
 	public function check_identity($identity="email") {
-		
+		echo "<br/>ENTERING check_identity function<br/>";
+		echo "<br/>IDENTITY COLUMN: " . $identity . "<br/>";
+		echo "<br/>IDENTITY VALUE: " . $this->input->post($identity) . "<br/>";
 		// get identity
+		
 		$config_tables = $this->config->item('tables', 'skeleton_auth');
-		$query = $this->db->where($identity, $this->input->post($identity));
+		$this->db->where($identity, $this->input->post($identity));
+		echo "<br/>TABLE: " . $config_tables['users']. "<br/>";
+		$identity_row = $this->db->get($config_tables['users'])->row();
+		
+		$num = $this->db->count_all_results();
+		
+		echo "<br/>LAST SQL QUERY: " . $this->db->last_query() . " <br/>";
 			
-		$num = $this->db->count_all_results($config_tables['users']);
-			
+		echo "<br/>num: " . $num . " <br/>";
+	
 		if ( $num <= 0) {
+			echo "ERROR NOT FOUND!";
+			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_not_found"),$identity));
+			//redirect($this->forgot_password_page . "_" . $identity, 'refresh');
+		}
+			
+		if ( $num > 1) {
+			echo "ERROR MORE THAN ONE!";
+			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_found_more_than_one"),$identity));
+			//redirect($this->forgot_password_page . "_" . $identity, 'refresh');
+		}
+		echo "<br/>IDENTITY ROW: " . print_r($identity_row) . "<br/>";
+		return $identity_row;
+	}
+	
+	public function check_identity_ldap($identity="email") {
+		
+		$identity_value = $this->input->post($identity);
+		
+		$result = $this->auth_ldap->check_identity_ldap($identity,$identity_value);
+		
+		echo "Hola!";
+		if ( $result["count"] <= 0) {
 			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_not_found"),$identity));
 			redirect($this->forgot_password_page . "_" . $identity, 'refresh');
 		}
 			
-		if ( $num > 1) {
+		if ( $result["count"] > 1) {
 			$this->session->set_flashdata('message', sprintf(lang("forgot_password_identity_found_more_than_one"),$identity));
 			redirect($this->forgot_password_page . "_" . $identity, 'refresh');
 		}
+		echo "Hola1!";
+		return $result["value"];
 	}
 
 	//reset password - final step for forgotten password
 	public function reset_password($code = NULL)
 	{
-		$this->lang->load('inventory', 'catalan');	       
-		$this->skeleton_auth->lang->load('skeleton_auth', 'catalan');
-		$this->lang->load('auth', 'catalan');
-		$this->lang->load('form_validation', 'catalan');
-		
+		$this->_set_common_data();
+
 		if (!$code)
 		{
 			show_404();
@@ -418,13 +481,15 @@ function index()
 			else
 			{
 				// do we have a valid request?
-				if ($this->_valid_csrf_nonce() === FALSE || $user->id != $this->input->post('user_id'))
+				//if ($this->_valid_csrf_nonce() === FALSE || $user->id != $this->input->post('user_id'))
+				if (false)
 				{
 
 					//something fishy might be up
 					$this->skeleton_auth->clear_forgotten_password_code($code);
 
-					show_error($this->lang->line('error_csrf'));
+					echo "<br/>ERROR CSRF but continue to debug!";
+					//show_error($this->lang->line('error_csrf'));
 
 				}
 				else
@@ -432,17 +497,24 @@ function index()
 					// finally change the password
 					$identity = $user->{$this->config->item('identity', 'skeleton_auth')};
 
-					$change = $this->skeleton_auth->reset_password($identity, $this->input->post('new'));
-
-					if ($change)
+					echo "<br/>Before skeleton_auth->reset_password!";
+					$change_result = $this->skeleton_auth->reset_password($identity, $this->input->post('new'));
+					echo "<br/>After skeleton_auth->reset_password!";
+					echo "<br/>Change result: " . $change_result;
+					
+					if ($change_result)
 					{
 						//if the password was successfully changed
+						echo "<br/>OK changing password!";
 						$this->session->set_flashdata('message', $this->skeleton_auth->messages());
+						$this->skeleton_auth->clear_forgotten_password_code($code);
 						$this->logout();
 					}
 					else
 					{
+						echo "<br/>ERRORS changing password!";
 						$this->session->set_flashdata('message', $this->skeleton_auth->errors());
+						$this->skeleton_auth->clear_forgotten_password_code($code);
 						redirect($this->reset_password_page . $code, 'refresh');
 					}
 				}

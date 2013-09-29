@@ -41,6 +41,28 @@ $config['default_realm'] = "mysql";
 
 /*
 |--------------------------------------------------------------------------
+| ACTIVE FORGOT PASSWORD REALMS
+|--------------------------------------------------------------------------
+|
+| Active Authentication Realms for forgot password. Supported mysql, ldap
+| 
+| Example: ldap,mysql
+*/
+$config['forgot_password_realms'] = "mysql,ldap";
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT FORGOT PASSWORD REALM
+|--------------------------------------------------------------------------
+|
+| Default realm at login box
+| 
+| Example: ldap
+*/
+$config['default_forgot_password_realm'] = "ldap";
+
+/*
+|--------------------------------------------------------------------------
 | MAINTENANCE MODE
 |--------------------------------------------------------------------------
 |
@@ -108,7 +130,7 @@ $config['roles'] = array(
 |
 | Groups with readonly acces to app
 | 
-| Example: inventory_readonly
+| Example: skeleton_readonly
 */
 $config['skeleton_readonly_group'] = "skeleton_readonly";
 
@@ -119,7 +141,7 @@ $config['skeleton_readonly_group'] = "skeleton_readonly";
 |
 | Groups with admin role
 | 
-| Example: inventory_readonly
+| Example: skeleton_admin
 */
 $config['skeleton_admin_group'] = "skeleton_admin";
 
@@ -227,6 +249,7 @@ $config['max_rounds']     = 9;
  */
 $config['site_title']                 = "ebretic.com - skeleton";       // Site Title, example.com
 $config['organization']               = "Ebretic Enginyeria SL";       // Organization name, EBRETIC ENGINYERIA SL
+$config['app_name']                   = "Skeleton";       // Organization name, EBRETIC ENGINYERIA SL
 $config['admin_email']                = "localhost"; // Admin Email, admin@example.com
 $config['default_group']              = 'skeleton_readonly';           // Default group, use name
 $config['admin_group']                = 'skeleton_admin';             // Default administrators group, use name

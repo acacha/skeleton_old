@@ -478,13 +478,7 @@ class skeleton_main extends CI_Controller {
 			//redirect them to the login page
 			redirect($this->skeleton_auth->login_page, 'refresh');
 		}
-	
-	/*
-		$data['inventory_userinfo_js_files'] = array(
-           base_url('assets/grocery_crud/js/jquery-1.10.2.min.js'),
-		);
-		*/
-        
+	        
         $current_rol_id = $this->session->userdata('role');
 		$current_role_name = $this->_get_rolename_byId($current_rol_id);
 
@@ -760,7 +754,6 @@ class skeleton_main extends CI_Controller {
 			redirect("skeleton_main/user_preferences", 'refresh');
 		}
 		
-		//Other groups/roles (inventory_organizationunit, inventory_dataentry)
 		$user_have_preferences=false;
 		$user_id = $this->session->userdata('user_id');
 		$user_have_preferences=$this->skeleton_auth_model->user_have_preferences($user_id);

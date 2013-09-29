@@ -130,11 +130,14 @@ class skeleton_auth
 	 * @return mixed  boolian / array
 	 * @author Mathew
 	 **/
-	public function forgotten_password($identity,$identity_key="email")    //changed $email to $identity
+	public function forgotten_password($identity,$identity_key="email",$realm="mysql")    //changed $email to $identity
 	{
+		echo "identity: " . $identity . "<br/>" ;
+		echo "identity_key: " . $identity_key . "<br/>" ;
 		$this->skeleton_auth_model->identity_column=$identity_key;
-		if ( $this->skeleton_auth_model->forgotten_password($identity) )   //changed
+		if ( $this->skeleton_auth_model->forgotten_password($identity,$identity_key,$realm) )   //changed
 		{
+			echo "Database changed Ok!";
 			// Get user information
 			$user = $this->where($identity_key, $identity)->users()->row();  //changed to get_user_by_identity from email
 
@@ -155,6 +158,7 @@ class skeleton_auth
 				{
 		
 					$data['organization'] = $this->config->item('organization', 'skeleton_auth');	
+					$data['app_name'] = $this->config->item('app_name', 'skeleton_auth');	
 					$message = $this->load->view($this->config->item('email_templates', 'skeleton_auth').$this->config->item('email_forgot_password', 'skeleton_auth'), $data, true);
 					
 					$this->email->clear();
@@ -187,6 +191,7 @@ class skeleton_auth
 		}
 		else
 		{
+			echo "Database error!";
 			$this->set_error('forgot_password_unsuccessful');
 			return FALSE;
 		}

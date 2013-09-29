@@ -2,12 +2,11 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-      <title><?php echo lang('inventory') . ". " . $this->session->userdata('institution_name'); ?></title>
+      <title><?php echo $login_appname . ". " . $login_entity;?></title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description" content="Login form. Inventory">
-      <meta name="author" content="Sergi Tur Badenas. Josep Llaó">
-      
+      <meta name="description" content="Change password form. <?php echo $login_appname;?>">
+      <meta name="author" content="<?php echo $copyright_authors_text; ?>">      
       <!-- CSS PROPIS -->
 
        <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
@@ -58,12 +57,12 @@
  
  <center><div id="maintenance-mode-message" class="text-error"></div></center>
  
- <center><h1><?php echo lang('inventory') . ". " . $this->session->userdata('institution_name');?></h1></center>
+ <center><h1><?php echo $login_appname . ". " . $login_entity;?></h1></center>
      <br>
 
  <center><div class="text-error"><div id="infoMessage"><?php echo $message;?></div></div>
  
- <?php echo form_open('inventory_auth/change_password/', array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
+ <?php echo form_open('skeleton_auth/auth/change_password/', array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
   <h3><?php echo lang('change_password_heading');?></h3>
   <p><?php echo lang('introduce_new_password');?></p>
       
@@ -90,8 +89,8 @@
  <center><p><a href="<?php echo base_url('');?>"><?php echo lang('come_back');?></a></p></center>
 
   <br/>
-       <center><p><font size="-3">© <a href="http://acacha.org/mediawiki/index.php/Ebre-inventory">Ebre-inventory</a> és una aplicació d'<a href="http://www.ebretic.com/" rel="author"> Ebretic Enginyeria SL (www.ebretic.com)</a><br/>creada per <a href="http://acacha.org">Sergi Tur Badenas</a> i Josep Llaó Angelats</font></p></center>
- </center>
+ 	   <?php include("auth_footer.html"); ?>      
+
  </div>
 </body>
 </html>

@@ -52,12 +52,15 @@ $config['login_attribute'] = 'uid';
 $config['proxy_user'] = 'cn=admin,dc=acme,dc=com';
 $config['proxy_pass'] = 'PUT_YOUR_PASSWORD_HERE';
 $config['roles'] = array(
-    1 => 'inventory_readonly',
-    3 => 'inventory_admin',
-    5 => 'inventory_dataentry',
-    7 => 'inventory_organizationalunit'
+    1 => 'skeleton_readonly',
+    3 => 'skeleton_admin',
+    5 => 'skeleton_dataentry',
+    7 => 'skeleton_organizationalunit'
     );
 $config['member_attribute'] = 'memberUid';
 $config['auditlog'] = 'application/logs/audit.log';  // Some place to log attempted logins (separate from message log)
+
+//UNSET TO use an addition alternative email ldap attribute
+//$config['alternativeEmailAttribute'] = 'highSchoolPersonalEmail';
 
 ?>
