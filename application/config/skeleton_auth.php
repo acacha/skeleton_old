@@ -7,7 +7,7 @@
 | 
 */
 $config['login_appname'] = "Intranet";
-$config['login_entity'] = "Institut de l'Ebre";
+$config['login_entity'] = "Institut del Montsià";
 
 $config['copyright_url'] = "http://acacha.org/mediawiki/index.php/ebre-escool";
 $config['copyright_app_name'] = "Ebre-escool Intranet";
@@ -189,6 +189,29 @@ $config['skeleton_admin_group'] = "intranet_admin";
 | Example: catalan
 */
 $config['default_language'] = "catalan";
+
+/*
+|--------------------------------------------------------------------------
+| TEACHERS BASE DN
+|--------------------------------------------------------------------------
+| 
+| BASE DN FOR STUDENTS
+| 
+| Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
+*/
+$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesmontsia,dc=org";
+
+
+/*
+|--------------------------------------------------------------------------
+| TEACHERS BASE DN
+|--------------------------------------------------------------------------
+|
+| BASE DN FOR TEACHERS
+| 
+| Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
+*/
+$config['teachers_base_dn'] = "ou=Profes,ou=All,dc=iesmontsia,dc=org";
 
 /*
 | -------------------------------------------------------------------------
