@@ -75,6 +75,16 @@
      
      <center><div class="text-error"><?php echo $message;?></div></center>
      
+<?php if ($this->session->flashdata('spam_alert')): ?>
+ <center>
+	<div class="alert">
+     <button type="button" class="close" data-dismiss="alert">&times;</button>
+     <strong><?php echo lang('Atention');?>! </strong> <?php echo lang('SPAM_Message_Part1');?><br/>
+     <?php echo lang('SPAM_Message_Part2');?>
+    </div>
+ </center>
+<?php endif; ?>
+     
      <center><h1><?php echo $login_appname . ". " . $login_entity;?></h1></center>
      <br>
      

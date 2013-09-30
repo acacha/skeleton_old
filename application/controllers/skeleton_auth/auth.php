@@ -339,6 +339,7 @@ function index()
 			{
 				//if there were no errors
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
+				$this->session->set_flashdata('spam_alert', true);
 				redirect($this->login_page, 'refresh'); //we should display a confirmation page here instead of the login page
 			}
 			else

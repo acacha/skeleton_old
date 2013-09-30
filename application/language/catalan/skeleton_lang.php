@@ -116,3 +116,7 @@ $lang['No']= "No";
 
 $lang['show_express_form']="Mostrar el formulari express";
 $lang['hide_express_form']="Amagar el formulari express";
+
+$lang['Atention']="Atenció";
+$lang['SPAM_Message_Part1']="Comproveu la vostra carpeta <b>d'SPAM</b> o <b>correu no desitjat</b>!";
+$lang['SPAM_Message_Part2']='Molts sistemes de correu electrònic com Gmail o Hotmail us posaran els emails enviats per <br/>aquesta aplicació a la carpeta "Correu no desitjat"';
