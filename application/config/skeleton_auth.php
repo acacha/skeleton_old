@@ -7,7 +7,7 @@
 | 
 */
 $config['login_appname'] = "Intranet";
-$config['login_entity'] = "Institut del Montsià";
+$config['login_entity'] = "Institut de Deltebre";
 
 $config['copyright_url'] = "http://acacha.org/mediawiki/index.php/ebre-escool";
 $config['copyright_app_name'] = "Ebre-escool Intranet";
@@ -118,8 +118,8 @@ $config['maintenance_mode_user_id'] = 5000;
 | HTML HEADER METADATA DEFAULT VALUES
 |--------------------------------------------------------------------------
 */
-$config['header_title'] = "Intranet. Institut de l'Ebre";
-$config['header_description'] = "Intranet de l'Institut de l'Ebre";
+$config['header_title'] = "Intranet. Institut de Deltebre";
+$config['header_description'] = "Intranet de l'Institut de Deltebre";
 $config['header_authors'] = "Sergi Tur Badenas";
 
 /*       
@@ -199,7 +199,7 @@ $config['default_language'] = "catalan";
 | 
 | Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
 */
-$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesmontsia,dc=org";
+$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesdeltebre,dc=net";
 
 
 /*
@@ -211,7 +211,7 @@ $config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesmontsia,dc=org";
 | 
 | Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
 */
-$config['teachers_base_dn'] = "ou=Profes,ou=All,dc=iesmontsia,dc=org";
+$config['teachers_base_dn'] = "ou=Profes,ou=All,dc=iesdeltebre,dc=net";
 
 /*
 | -------------------------------------------------------------------------
