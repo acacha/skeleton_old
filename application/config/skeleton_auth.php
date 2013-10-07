@@ -7,7 +7,7 @@
 | 
 */
 $config['login_appname'] = "Intranet";
-$config['login_entity'] = "Institut de Deltebre";
+$config['login_entity'] = "Institut del Ebre";
 
 $config['copyright_url'] = "http://acacha.org/mediawiki/index.php/ebre-escool";
 $config['copyright_app_name'] = "Ebre-escool Intranet";
@@ -199,7 +199,7 @@ $config['default_language'] = "catalan";
 | 
 | Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
 */
-$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesdeltebre,dc=net";
+$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesebre,dc=com";
 
 
 /*
@@ -211,7 +211,7 @@ $config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesdeltebre,dc=net";
 | 
 | Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
 */
-$config['teachers_base_dn'] = "ou=Profes,ou=All,dc=iesdeltebre,dc=net";
+$config['teachers_base_dn'] = "ou=Profes,ou=All,dc=iesebre,dc=com";
 
 /*
 | -------------------------------------------------------------------------
