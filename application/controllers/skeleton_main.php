@@ -3,9 +3,14 @@
 
 class skeleton_main extends CI_Controller {
 	
+	public $body_header_view ='include/body_header' ;
+	
 	function __construct()
     {
         parent::__construct();
+        
+        //SKELETON THEMSELVES: necessary to load as thirdparty
+		$this->load->add_package_path(APPPATH.'third_party/skeleton/application/');
         
     	$params = array('model' => "skeleton_auth_model");
 		$this->load->library('skeleton_auth',$params);
@@ -74,7 +79,7 @@ class skeleton_main extends CI_Controller {
 		// TODO: check others roles if allowed to show management menu and show_maintenace_menu
 		
 		$data['body_header_app_name']="Skeleton";
-		$this->load->view('include/body_header',$data);
+		$this->load->view($this->body_header_view,$data);
 	}
 	
 	protected function _load_body() {
