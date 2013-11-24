@@ -93,7 +93,9 @@ class skeleton_main extends CI_Controller {
 		
 		// TODO: check others roles if allowed to show management menu and show_maintenace_menu
 		
-		$data['body_header_app_name']="Ebre-escool";
+
+		$data['body_header_app_name']="Skeleton";
+
 		$this->load->view($this->body_header_view,$data);
 	}
 	
