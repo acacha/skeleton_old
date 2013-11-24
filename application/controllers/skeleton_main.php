@@ -3,9 +3,16 @@
 
 class skeleton_main extends CI_Controller {
 	
+	public $body_header_view ='include/body_header' ;
+
+	public $body_header_lang_file ='body_header' ;
+	
 	function __construct()
     {
         parent::__construct();
+        
+        //SKELETON THEMSELVES: necessary to load as thirdparty
+		$this->load->add_package_path(APPPATH.'third_party/skeleton/application/');
         
     	$params = array('model' => "skeleton_auth_model");
 		$this->load->library('skeleton_auth',$params);
@@ -31,7 +38,10 @@ class skeleton_main extends CI_Controller {
 			$current_language= $this->config->item('default_language','skeleton_auth');
 		}
 		$this->grocery_crud->set_language($current_language);
-    	$this->lang->load('skeleton', $current_language);	       
+    	
+    	$this->lang->load('skeleton', $current_language);
+
+    	$this->lang->load($this->body_header_lang_file, $current_language);
         
 	}
 	
@@ -73,8 +83,8 @@ class skeleton_main extends CI_Controller {
 		
 		// TODO: check others roles if allowed to show management menu and show_maintenace_menu
 		
-		$data['body_header_app_name']="Skeleton";
-		$this->load->view('include/body_header',$data);
+		$data['body_header_app_name']="Ebre-escool";
+		$this->load->view($this->body_header_view,$data);
 	}
 	
 	protected function _load_body() {
@@ -880,6 +890,10 @@ protected function set_dialogforms($grocery_crud) {
 			$grocery_crud->unset_dialogforms();
 		}	
 		
+}
+
+public function add_callback_last_update(){  
+	return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" name="last_update" id="field-last_update" readonly>';
 }
 
 public function edit_field_callback_password($value, $primary_key)
