@@ -44,6 +44,16 @@ class skeleton_main extends CI_Controller {
     	$this->lang->load($this->body_header_lang_file, $current_language);
         
 	}
+
+	protected function add_javascript_to_html_header_data($html_header_data,$js_file) {		
+		array_push($html_header_data['skeleton_js_files'],$js_file);
+		return $html_header_data;
+	} 
+	
+	protected function add_css_to_html_header_data($html_header_data,$css_file) {		
+		array_push($html_header_data['skeleton_css_files'],$css_file);
+		return $html_header_data;
+	} 
 	
 	protected function _load_html_header($html_header_data=array(),$grocery_crud_data=array()) {
 		
