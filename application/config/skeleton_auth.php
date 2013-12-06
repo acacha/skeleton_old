@@ -199,7 +199,7 @@ $config['default_language'] = "catalan";
 | 
 | Example: ou=Alumnes,ou=All,dc=iesebre,dc=com
 */
-$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesebre,dc=com";
+$config['students_base_dn'] = "ou=Alumnes,ou=All,dc=iesdeltebre,dc=net";
 
 
 /*
