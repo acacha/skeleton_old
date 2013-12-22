@@ -6,6 +6,8 @@ class skeleton_main extends CI_Controller {
 	public $body_header_view ='include/body_header' ;
 
 	public $body_header_lang_file ='body_header' ;
+
+	public $preferences_page = "skeleton_main/user_preferences";
 	
 	function __construct()
     {
@@ -766,14 +768,14 @@ class skeleton_main extends CI_Controller {
 		//CHECK IF USER IS READONLY --> REDIRECT TO LIST
 		$readonly_group = $this->config->item('skeleton_readonly_group','skeleton_auth');
 		if ($this->skeleton_auth->in_group($readonly_group)) {
-			redirect("skeleton_main/user_preferences", 'refresh');
+			redirect($this->preferences_page, 'refresh');
 		}
 		
 		//CHECK IF USER IS ADMIN --> REDIRECT TO LIST ALL USER 
 		//PREFERENCES
 		$skeleton_admin_group = $this->config->item('skeleton_admin_group','skeleton_auth');
 		if ($this->skeleton_auth->in_group($skeleton_admin_group)) {
-			redirect("skeleton_main/user_preferences", 'refresh');
+			redirect($this->preferences_page, 'refresh');
 		}
 		
 		$user_have_preferences=false;
@@ -782,10 +784,12 @@ class skeleton_main extends CI_Controller {
 		$user_preferences_id=null;
 		if ($user_have_preferences) {
 			$user_preferences_id = $this->skeleton_auth_model->get_user_preferencesId($user_id);  
-			redirect("skeleton_main/user_preferences/edit/". $user_preferences_id);
+			$edit_user_preferences = $this->preferences_page . "/edit/";
+			redirect($edit_user_preferences . $user_preferences_id);
 		}
 		else {
-			redirect("skeleton_main/user_preferences/add");
+			$add_user_preferences = $this->preferences_page . "/add/";
+			redirect($add_user_preferences);
 		}
 		
 	}
