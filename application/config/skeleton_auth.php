@@ -118,8 +118,8 @@ $config['maintenance_mode_user_id'] = 5000;
 | HTML HEADER METADATA DEFAULT VALUES
 |--------------------------------------------------------------------------
 */
-$config['header_title'] = "Intranet. Institut de Deltebre";
-$config['header_description'] = "Intranet de l'Institut de Deltebre";
+$config['header_title'] = "Intranet. Institut de l'Ebre";
+$config['header_description'] = "Intranet de l'Institut de l'Ebre";
 $config['header_authors'] = "Sergi Tur Badenas";
 
 /*       
