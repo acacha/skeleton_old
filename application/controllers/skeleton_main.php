@@ -1,9 +1,14 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
+if ( !class_exists('skeleton_main') ) { 
 
 class skeleton_main extends CI_Controller {
 	
 	public $body_header_view ='include/body_header' ;
+
+	public $html_header_view ='include/html_header' ;
+
+	public $body_footer_view ='include/body_footer' ;
 
 	public $body_header_lang_file ='body_header' ;
 
@@ -76,7 +81,7 @@ class skeleton_main extends CI_Controller {
 		$data['skeleton_css_files'] = $skeleton_css_files ;
 		$data['skeleton_js_files'] = $skeleton_js_files ;
 		
-		$this->load->view('include/html_header',array_merge((array) $grocery_crud_data,$data));
+		$this->load->view($this->html_header_view,array_merge((array) $grocery_crud_data,$data));
 	}
 	
 	protected function _load_body_header() {
@@ -122,7 +127,7 @@ class skeleton_main extends CI_Controller {
 		$data['body_footer_github_url'] = "https://github.com/acacha/skeleton";
 		$data['body_footer_authors'] = '<a href="http://acacha.org">Sergi Tur Badenas</a>';
 
-		$this->load->view('include/body_footer',$data);
+		$this->load->view($this->body_footer_view,$data);
 	}
 	
 	
@@ -162,7 +167,7 @@ class skeleton_main extends CI_Controller {
 		
 		$bootstrap_min=base_url("assets/css/bootstrap.min.css");
 		$bootstrap_responsive=base_url("assets/css/bootstrap-responsive.min.css");
-		$font_awesome=base_url("assets/css/font-awesome.css");
+		$font_awesome=base_url("assets/css/font-awesome.min.css");
 				
 		array_push($skeleton_css_files, $bootstrap_min, $bootstrap_responsive,$font_awesome);
 		$header_data['skeleton_css_files']=$skeleton_css_files;			
@@ -1130,26 +1135,28 @@ public function defaultvalues_view($table_name) {
 	
 	public function callback_unset_verification_and_hash_and_extra_actions($post_array){
 		
-	unset($post_array['verify_password']);   
-	$password=$post_array['password'];
+		unset($post_array['verify_password']);   
+		$password=$post_array['password'];
 	   
-	if(!empty($password)) {
-		$salt       = $this->skeleton_auth->store_salt ? $this->salt() : FALSE;
-		$post_array['password']  = $this->skeleton_auth->hash_password($password, $salt);
-		if ($this->skeleton_auth->store_salt)	{
-			$post_array['salt'] = $salt;
+		if(!empty($password)) {
+			$salt       = $this->skeleton_auth->store_salt ? $this->salt() : FALSE;
+			$post_array['password']  = $this->skeleton_auth->hash_password($password, $salt);
+			if ($this->skeleton_auth->store_salt)	{
+				$post_array['salt'] = $salt;
+			}
+		} else {
+			//DON'T SAVE VOID PASSWORD INSTEAD LET THE PASSWORD REMAIN the same
+			unset($post_array['password']);
 		}
-	} else {
-		//DON'T SAVE VOID PASSWORD INSTEAD LET THE PASSWORD REMAIN the same
-		unset($post_array['password']);
-	}
 		
-	//EXTRA FIELDS:
-	//IP ADDRESS
-	$post_array['ip_address'] = $this->skeleton_auth->_prepare_ip($this->input->ip_address());
-	$post_array['created_on'] = date('Y-m-d H:i:s');
+		//EXTRA FIELDS:
+		//IP ADDRESS
+		$post_array['ip_address'] = $this->skeleton_auth->_prepare_ip($this->input->ip_address());
+		$post_array['created_on'] = date('Y-m-d H:i:s');
 
-	return $post_array;
+		return $post_array;
+	}
+
 }
 
 }
