@@ -977,8 +977,14 @@ function before_update_user_preference_callback($post_array, $primary_key) {
     
 protected function _get_rolename_byId($id){
 		
-		$roles = (array) $this->config->item('roles');		
-		return $roles[(int) $id];
+		$roles = (array) $this->config->item('roles');			
+
+		$role = "";
+		if (array_key_exists((int) $id, $roles)) {
+			$role = $roles[(int) $id];    		
+		}
+
+		return $role;
 	}    
 	
 function error404()	{
