@@ -1,5 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?php
+
+$bootstrap_combined_url = "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css";
+$jquery_minified_url = "http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js";
+$bootstrap_minified_url = "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js";
+
+if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
+  $bootstrap_combined_url = base_url('assets/skeleton/css/bootstrap-combined.min.css');
+  $jquery_minified_url = base_url('assets/skeleton/css/jquery.min.js');
+  $bootstrap_minified_url = base_url('assets/skeleton/css/bootstrap.min.js');
+}
+
+?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
       <title><?php echo $login_appname . ". " . $login_entity;?></title>
@@ -16,14 +29,14 @@
        <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/skeleton/css/bootstrap-select.min.css')?>"/>
 
        
-       <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+       <link type="text/css" rel="stylesheet" href="<?php echo $bootstrap_combined_url;?>" /> 
    
 
    <!-- JS PROPIS -->
-       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-       <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+       <script src="<?php echo $jquery_minified_url;?>"></script>
+       <script src="<?php echo $bootstrap_minified_url;?>"></script>
        <script src="<?php echo base_url('assets/skeleton/js/bootstrap-select.min.js')?>"></script>
-    
+   
    <style type="text/css">
       body {
         padding-top: 40px;

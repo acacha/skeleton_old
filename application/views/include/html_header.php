@@ -66,5 +66,4 @@
 </style>
       
  </head>
- 
- <!-- END html_header.php -->    
+ <!-- END html_header.php -->

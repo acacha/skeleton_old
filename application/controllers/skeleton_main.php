@@ -1,11 +1,18 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
+if ( !class_exists('skeleton_main') ) { 
 
 class skeleton_main extends CI_Controller {
 	
 	public $body_header_view ='include/body_header' ;
 
+	public $html_header_view ='include/html_header' ;
+
+	public $body_footer_view ='include/body_footer' ;
+
 	public $body_header_lang_file ='body_header' ;
+
+	public $preferences_page = "skeleton_main/user_preferences";
 	
 	function __construct()
     {
@@ -74,7 +81,7 @@ class skeleton_main extends CI_Controller {
 		$data['skeleton_css_files'] = $skeleton_css_files ;
 		$data['skeleton_js_files'] = $skeleton_js_files ;
 		
-		$this->load->view('include/html_header',array_merge((array) $grocery_crud_data,$data));
+		$this->load->view($this->html_header_view,array_merge((array) $grocery_crud_data,$data));
 	}
 	
 	protected function _load_body_header() {
@@ -120,7 +127,7 @@ class skeleton_main extends CI_Controller {
 		$data['body_footer_github_url'] = "https://github.com/acacha/skeleton";
 		$data['body_footer_authors'] = '<a href="http://acacha.org">Sergi Tur Badenas</a>';
 
-		$this->load->view('include/body_footer',$data);
+		$this->load->view($this->body_footer_view,$data);
 	}
 	
 	
@@ -160,15 +167,21 @@ class skeleton_main extends CI_Controller {
 		
 		$bootstrap_min=base_url("assets/css/bootstrap.min.css");
 		$bootstrap_responsive=base_url("assets/css/bootstrap-responsive.min.css");
-		$font_awesome=base_url("assets/css/font-awesome.css");
+		$font_awesome=base_url("assets/css/font-awesome.min.css");
 				
 		array_push($skeleton_css_files, $bootstrap_min, $bootstrap_responsive,$font_awesome);
 		$header_data['skeleton_css_files']=$skeleton_css_files;			
 		
 		$skeleton_js_files=array();
-		
+
 		$lodash_js="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.2.1/lodash.min.js";
 		$jquery_js="http://code.jquery.com/jquery-1.10.2.min.js";
+
+		if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
+			$lodash_js= base_url('assets/js/lodash.min.js');
+			$jquery_js= base_url('assets/js/jquery-1.10.2.min.js');
+		}
+		
 		$lazyload_js=base_url("assets/grocery_crud/js/common/lazyload-min.js");
 		$bootstrap_js=base_url("assets/js/bootstrap.min.js");
 		
@@ -766,14 +779,14 @@ class skeleton_main extends CI_Controller {
 		//CHECK IF USER IS READONLY --> REDIRECT TO LIST
 		$readonly_group = $this->config->item('skeleton_readonly_group','skeleton_auth');
 		if ($this->skeleton_auth->in_group($readonly_group)) {
-			redirect("skeleton_main/user_preferences", 'refresh');
+			redirect($this->preferences_page, 'refresh');
 		}
 		
 		//CHECK IF USER IS ADMIN --> REDIRECT TO LIST ALL USER 
 		//PREFERENCES
 		$skeleton_admin_group = $this->config->item('skeleton_admin_group','skeleton_auth');
 		if ($this->skeleton_auth->in_group($skeleton_admin_group)) {
-			redirect("skeleton_main/user_preferences", 'refresh');
+			redirect($this->preferences_page, 'refresh');
 		}
 		
 		$user_have_preferences=false;
@@ -782,10 +795,12 @@ class skeleton_main extends CI_Controller {
 		$user_preferences_id=null;
 		if ($user_have_preferences) {
 			$user_preferences_id = $this->skeleton_auth_model->get_user_preferencesId($user_id);  
-			redirect("skeleton_main/user_preferences/edit/". $user_preferences_id);
+			$edit_user_preferences = $this->preferences_page . "/edit/";
+			redirect($edit_user_preferences . $user_preferences_id);
 		}
 		else {
-			redirect("skeleton_main/user_preferences/add");
+			$add_user_preferences = $this->preferences_page . "/add/";
+			redirect($add_user_preferences);
 		}
 		
 	}
@@ -978,8 +993,14 @@ function before_update_user_preference_callback($post_array, $primary_key) {
     
 protected function _get_rolename_byId($id){
 		
-		$roles = (array) $this->config->item('roles');		
-		return $roles[(int) $id];
+		$roles = (array) $this->config->item('roles');			
+
+		$role = "";
+		if (array_key_exists((int) $id, $roles)) {
+			$role = $roles[(int) $id];    		
+		}
+
+		return $role;
 	}    
 	
 function error404()	{
@@ -1136,26 +1157,28 @@ public function defaultvalues_view($table_name) {
 	
 	public function callback_unset_verification_and_hash_and_extra_actions($post_array){
 		
-	unset($post_array['verify_password']);   
-	$password=$post_array['password'];
+		unset($post_array['verify_password']);   
+		$password=$post_array['password'];
 	   
-	if(!empty($password)) {
-		$salt       = $this->skeleton_auth->store_salt ? $this->salt() : FALSE;
-		$post_array['password']  = $this->skeleton_auth->hash_password($password, $salt);
-		if ($this->skeleton_auth->store_salt)	{
-			$post_array['salt'] = $salt;
+		if(!empty($password)) {
+			$salt       = $this->skeleton_auth->store_salt ? $this->salt() : FALSE;
+			$post_array['password']  = $this->skeleton_auth->hash_password($password, $salt);
+			if ($this->skeleton_auth->store_salt)	{
+				$post_array['salt'] = $salt;
+			}
+		} else {
+			//DON'T SAVE VOID PASSWORD INSTEAD LET THE PASSWORD REMAIN the same
+			unset($post_array['password']);
 		}
-	} else {
-		//DON'T SAVE VOID PASSWORD INSTEAD LET THE PASSWORD REMAIN the same
-		unset($post_array['password']);
-	}
 		
-	//EXTRA FIELDS:
-	//IP ADDRESS
-	$post_array['ip_address'] = $this->skeleton_auth->_prepare_ip($this->input->ip_address());
-	$post_array['created_on'] = date('Y-m-d H:i:s');
+		//EXTRA FIELDS:
+		//IP ADDRESS
+		$post_array['ip_address'] = $this->skeleton_auth->_prepare_ip($this->input->ip_address());
+		$post_array['created_on'] = date('Y-m-d H:i:s');
 
-	return $post_array;
+		return $post_array;
+	}
+
 }
 
 }
