@@ -166,9 +166,15 @@ class skeleton_main extends CI_Controller {
 		$header_data['skeleton_css_files']=$skeleton_css_files;			
 		
 		$skeleton_js_files=array();
-		
+
 		$lodash_js="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.2.1/lodash.min.js";
 		$jquery_js="http://code.jquery.com/jquery-1.10.2.min.js";
+
+		if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
+			$lodash_js= base_url('assets/js/lodash.min.js');
+			$jquery_js= base_url('assets/js/jquery-1.10.2.min.js');
+		}
+		
 		$lazyload_js=base_url("assets/grocery_crud/js/common/lazyload-min.js");
 		$bootstrap_js=base_url("assets/js/bootstrap.min.js");
 		
