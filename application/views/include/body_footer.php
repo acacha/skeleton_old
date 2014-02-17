@@ -1,7 +1,9 @@
+
+
 <div id="skeleton_body_footer">
 
 <style type="text/css">	  
-    .footer {		   
+    .footer {		 
 		color: #666;
 		background: #222;
 		padding: 5px 0 5px 0;
@@ -16,7 +18,7 @@
          	color: #efefef;
     }	
 </style>
-<div style="clear:both"></div>
+<div style="clear:both;"></div>
 <div class="navbar navbar-fixed-bottom">
 	<div class="navbar-inner footer">
 		<div class="container">    

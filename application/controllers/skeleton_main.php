@@ -913,17 +913,18 @@ public function edit_field_callback_password($value, $primary_key)
     return '<input id="field-password" name="password" type="password" value="">';
 }
 
-function add_field_callback_entryDate(){  
+public function add_field_callback_entryDate(){  
 	  $data= date('d/m/Y H:i:s', time());
 	  return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'.$data.'" name="entryDate" id="field-entryDate" readonly>';    
 }
 
-function edit_field_callback_entryDate($value, $primary_key){  
+public function edit_field_callback_entryDate($value, $primary_key){  
+
 	  return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'. date('d/m/Y H:i:s', strtotime($value)) .'" name="entryDate" id="field-entryDate" readonly>';    
     }
     
 function edit_callback_last_update($value, $primary_key){  
-	 return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'. date('d/m/Y H:i:s', strtotime($value)) .'"  name="last_update" id="field-last_update" readonly>';
+	 return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'. date('d/m/Y H:i:s', time()) .'"  name="last_update" id="field-last_update" readonly>';
     }    
 
 //UPDATE AUTOMATIC FIELDS BEFORE INSERT
@@ -936,8 +937,17 @@ function before_insert_user_preference_callback($post_array, $primary_key) {
 		$post_array['userId'] = $user_id;
 		$post_array['creationUserId'] = $user_id;
 		$post_array['lastupdateUserId'] = $user_id;
+
+		return $post_array;
+}
+
+//UPDATE AUTOMATIC FIELDS BEFORE INSERT
+function before_insert_object_callback($post_array, $primary_key) {
+		//UPDATE LAST UPDATE FIELD
+		$data= date('d/m/Y H:i:s', time());
+		$post_array['entryDate'] = $data;
 		
-		
+		$post_array['creationUserId'] = $this->session->userdata('user_id');
 		return $post_array;
 }
 
@@ -1121,7 +1131,7 @@ public function defaultvalues_view($table_name) {
 	}	
 	
 	function edit_field_callback_lastupdate($value, $primary_key){
-	  return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'. date('d/m/Y H:i:s', strtotime($value)) .'" name="entryDate" id="field-last_update" readonly>';    	
+	  return '<input type="text" class="datetime-input hasDatepicker" maxlength="19" value="'. date('d/m/Y H:i:s', strtotime($value)) .'" name="last_update" id="field-last_update" readonly>';    	
 	}
 	
 	public function callback_unset_verification_and_hash_and_extra_actions($post_array){

@@ -51,21 +51,20 @@ var ei_noLoadfnOpenEditForm = function(this_element){
 */
 
 var set_form_default_values = function(){
-	
 	//MARKED FOR DELETION translation
-	
-	if (document.getElementById('field-<?php echo $table_name?>-markedForDeletion') != null) {
-		var mfd=document.getElementById("field-<?php echo $table_name?>-markedForDeletion");
+	'<?php echo $field_prefix;?>'
+	if (document.getElementById('field-<?php echo $table_name?>-<?php echo $field_prefix;?>markedForDeletion') != null) {
+		var mfd=document.getElementById("field-<?php echo $table_name?>-<?php echo $field_prefix;?>markedForDeletion");
 		//TRANSLATE MARKED FOR DELETION:
 
 		mfd.options[1].text='<?php echo $no_translated ?>';
 		mfd.options[2].text='<?php echo $yes_translated ?>';
-		$('#field-<?php echo $table_name?>-markedForDeletion').trigger('liszt:updated');
+		$('#field-<?php echo $table_name?>-<?php echo $field_prefix;?>markedForDeletion').trigger('liszt:updated');
 	}
 	
 	//DISABLE markedForDeletionDate if markedForDeletion is no
-	var $markedForDeletion = $('#field-<?php echo $table_name?>-markedForDeletion');
-	var $markedForDeletionDate = $('#field-<?php echo $table_name?>-markedForDeletionDate');
+	var $markedForDeletion = $('#field-<?php echo $table_name?>-<?php echo $field_prefix;?>markedForDeletion');
+	var $markedForDeletionDate = $('#field-<?php echo $table_name?>-<?php echo $field_prefix;?>markedForDeletionDate');
 	$markedForDeletion.change(function () {
 		if ($markedForDeletion.val() == 'y') {
 			$markedForDeletionDate.removeAttr('disabled'); 
