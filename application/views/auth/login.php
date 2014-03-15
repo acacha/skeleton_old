@@ -8,8 +8,8 @@ $bootstrap_minified_url = "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.
 
 if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
   $bootstrap_combined_url = base_url('assets/skeleton/css/bootstrap-combined.min.css');
-  $jquery_minified_url = base_url('assets/skeleton/css/jquery.min.js');
-  $bootstrap_minified_url = base_url('assets/skeleton/css/bootstrap.min.js');
+  $jquery_minified_url = base_url('assets/skeleton/js/jquery.min.js');
+  $bootstrap_minified_url = base_url('assets/skeleton/js/bootstrap.min.js');
 }
 
 ?>
