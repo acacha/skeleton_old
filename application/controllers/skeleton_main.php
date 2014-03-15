@@ -75,12 +75,14 @@ class skeleton_main extends CI_Controller {
 		$skeleton_css_files = array_key_exists("skeleton_css_files",$html_header_data) ? $html_header_data['skeleton_css_files'] : array();
 		$skeleton_js_files = array_key_exists("skeleton_js_files",$html_header_data) ? $html_header_data['skeleton_js_files'] : array();
 		
+		$menu = array_key_exists("menu",$html_header_data) ? $html_header_data['menu'] : array();
+
 		$data['header_title'] = $header_title ;
 		$data['header_description'] = $header_description ;
 		$data['header_authors'] = $header_authors ;
 		$data['skeleton_css_files'] = $skeleton_css_files ;
 		$data['skeleton_js_files'] = $skeleton_js_files ;
-		
+		$data['menu'] = $menu;
 		$this->load->view($this->html_header_view,array_merge((array) $grocery_crud_data,$data));
 	}
 	
@@ -455,7 +457,8 @@ class skeleton_main extends CI_Controller {
         $this->grocery_crud->set_relation_n_n('groups', 'users_groups','groups', 'user_id', 'group_id', 'name');
         
         //USER MAIN ORGANIZATIONAL UNIT
-        $this->grocery_crud->set_relation('mainOrganizationaUnitId','organizational_unit','{name}',array('markedForDeletion' => 'n'));
+        //$this->grocery_crud->set_relation('mainOrganizationaUnitId','organizational_unit','{name}',array('markedForDeletion' => 'n'));
+        $this->grocery_crud->set_relation('mainOrganizationaUnitId','organizational_unit','{organizational_unit_name}',array('organizational_unit_markedForDeletion' => 'n'));
         
         $this->grocery_crud->callback_before_insert(array($this,'callback_unset_verification_and_hash_and_extra_actions'));
 		$this->grocery_crud->callback_before_update(array($this,'callback_unset_verification_and_hash_and_extra_actions'));
