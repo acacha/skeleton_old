@@ -13,6 +13,8 @@ class skeleton_main extends CI_Controller {
 	public $body_header_lang_file ='body_header' ;
 
 	public $preferences_page = "skeleton_main/user_preferences";
+
+	public $users_view = "users_view.php";
 	
 	function __construct()
     {
@@ -500,7 +502,7 @@ class skeleton_main extends CI_Controller {
 	   $this->_load_body_header();
 	   
        
-       $this->load->view('users_view.php',$output);
+       $this->load->view($this->users_view,$output);
        //$this->load->view('include/footer');      
        
        /*******************
