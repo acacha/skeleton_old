@@ -15,6 +15,16 @@ class skeleton_main extends CI_Controller {
 	public $preferences_page = "skeleton_main/user_preferences";
 
 	public $users_view = "users_view.php";
+
+	public $groups_view = "groups_view.php";
+
+	public $skeleton_grocery_crud_default_view = 'skeleton_object_view.php';
+
+	public $preferences_view = 'skeleton_object_view.php';
+
+	public $user_preferences_NOT_yet_header_view = "user_preferences_NOT_yet_header.php";
+
+	public $user_preferences_for_admin_header_view = "user_preferences_for_admin_header.php";
 	
 	function __construct()
     {
@@ -751,12 +761,12 @@ class skeleton_main extends CI_Controller {
 			if($state == 'list') {
 				// IF USER HAVE NO PREFERENCES YES SHOW MESSAGE
 				if (!$user_have_preferences){
-					$this->load->view('user_preferences_NOT_yet_header.php',$data);                
+					$output->message = 1;
 				} else {
-				$this->load->view('user_preferences_for_admin_header.php',$data);                
+					$output->message = 2;
 				}
 			}
-            
+
             $this->_load_html_header($this->_get_html_header_data(),$output); 
 			$this->_load_body_header();
                 
@@ -765,7 +775,7 @@ class skeleton_main extends CI_Controller {
 				$this->load->view($alternate_view_to_grocerycrud,$output);
 			}
 			else{	
-				$this->load->view('skeleton_object_view.php',$output);     
+				$this->load->view($this->preferences_view,array_merge((array) $output,$data));     
 			}
 			$this->_load_body_footer();	 
 			} catch(Exception $e){
@@ -864,8 +874,7 @@ class skeleton_main extends CI_Controller {
 	   /******************/
 	   $this->_load_body_header();
 	   
-       
-       $this->load->view('groups_view.php',$output);
+       $this->load->view($this->groups_view,$output);
        //$this->load->view('include/footer');      
        
        /*******************

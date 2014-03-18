@@ -1162,6 +1162,18 @@ class Skeleton_auth_model extends CI_Model
 			$id=$this->register($identity, $password, $email, $additional_data);
 		}	
 	}
+
+
+	public function get_user_preferencesId ($userid) {
+                $this->db->select('user_preferencesId');
+                $this->db->where('userId',$userid);
+                $query = $this->db->get('user_preferences');
+                if ($query->num_rows() > 0) 
+                        return $query->row()->user_preferencesId;
+                else
+                        return false;
+	}
+
 	
 	
 	/**
