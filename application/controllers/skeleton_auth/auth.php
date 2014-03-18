@@ -21,7 +21,7 @@ class Auth extends CI_Controller {
     public $edit_group_view = "auth/edit_group";
     
     public $default_language = "catalan";
-    
+
     //Default accepted realms
     public $realms = "mysql,ldap";    
 
@@ -103,15 +103,19 @@ function index()
 		else return false;
 	}
 
+	//VOID: implement it on child classes
+	public function on_exit_login_hook($username="") {
+		return null;
+	}
+
 	//log the user in
 	function login()
 	{
-
 		$this->data['title'] = "Login";
 		$this->data['register_url'] = $this->create_user_view;;
-		
+
 		//BY DEFAULT REDIRECT AFTER SUCCESFUL LOGIN TO default value of:
-		//	$this->after_succesful_login_page
+		// $this->after_succesful_login_page
 		// But if a POST or GET variable named redirect exists use this page
 		$this->data['redirect'] = "";
 		$redirect_value=$this->_getvar("redirect");
@@ -120,10 +124,12 @@ function index()
 			$this->after_succesful_login_page=urldecode($redirect_value);
 			$this->data['redirect'] = "?redirect=".urldecode($redirect_value);
 		}
+
 		
 		//validate form input
 		$this->form_validation->set_rules('identity', lang('Identity'), 'required');
 		$this->form_validation->set_rules('password', lang('Password'), 'required');
+
 
 		if ($this->form_validation->run() == true)
 		{
@@ -152,6 +158,7 @@ function index()
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
+				$this->on_exit_login_hook($this->input->post('identity'));
 				redirect($this->after_succesful_login_page, 'refresh');
 			}
 			else
@@ -188,7 +195,9 @@ function index()
 	     	$this->data['default_realm'] = $this->config->item('default_realm', 'skeleton_auth');
 	     	
 	     	$this->_set_common_data();
-	     	
+
+	     	$this->data['login_url'] = $this->login_page;
+
 	     	$this->_render_page($this->login_view, $this->data);
 		}
 	}

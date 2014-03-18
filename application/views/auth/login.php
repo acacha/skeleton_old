@@ -100,8 +100,9 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
      
      <center><h1><?php echo $login_appname . ". " . $login_entity;?></h1></center>
      <br>
-     
-       <?php echo form_open('skeleton_auth/auth/login'.$redirect, array('id' => 'loginform', 'class' => 'form-signin' )); ?>
+       
+       <?php 
+       echo form_open($login_url .$redirect, array('id' => 'loginform', 'class' => 'form-signin' )); ?>
         
         <h3 class="form-signin-heading"><?php echo lang('login-form-greetings');?></h3>
 
