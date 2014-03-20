@@ -404,8 +404,8 @@ class skeleton_main extends CI_Controller {
 	    $this->current_table=$table_name;
         $this->grocery_crud->set_table($this->current_table);  
         
-        $this->grocery_crud->add_fields('first_name','last_name','username','password','verify_password','mainOrganizationaUnitId','email','active','company','phone','groups','created_on','ip_address');
-        $this->grocery_crud->edit_fields('first_name','last_name','username','password','verify_password','mainOrganizationaUnitId','email','active','company','phone','groups','last_login','ip_address');
+        $this->grocery_crud->add_fields('first_name','last_name','username','password','verify_password','person_id','mainOrganizationaUnitId','email','active','company','phone','groups','created_on','ip_address');
+        $this->grocery_crud->edit_fields('first_name','last_name','username','password','verify_password','person_id','mainOrganizationaUnitId','email','active','company','phone','groups','last_login','ip_address');
         
 
         //CHECK IF STATE IS UPDATE o UPDATE_VALIDATION
@@ -467,6 +467,9 @@ class skeleton_main extends CI_Controller {
 
 	    //GROUPS
         $this->grocery_crud->set_relation_n_n('groups', 'users_groups','groups', 'user_id', 'group_id', 'name');
+
+        //Person
+        $this->grocery_crud->set_relation('person_id','person','{person_givenName} {person_sn1} {person_sn2}');
         
         //USER MAIN ORGANIZATIONAL UNIT
         //$this->grocery_crud->set_relation('mainOrganizationaUnitId','organizational_unit','{name}',array('markedForDeletion' => 'n'));
