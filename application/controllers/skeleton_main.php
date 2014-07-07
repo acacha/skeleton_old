@@ -132,10 +132,10 @@ class skeleton_main extends CI_Controller {
 	
 	protected function _load_body_footer() {
 		$data=array();
-		$data['body_footer_entity_url'] = "http://www.ebretic.com/";
-		$data['body_footer_entity_url_name'] = "www.ebretic.com";
-		$data['body_footer_entity_name'] = "EBRETIC ENGINYERA SL";
-		$data['body_footer_entity_image_url'] = base_url('assets/img/ebretic_100x36.jpg');
+		$data['body_footer_entity_url'] = "http://acacha.org/";
+		$data['body_footer_entity_url_name'] = "acacha.org";
+		$data['body_footer_entity_name'] = "Institut de l'Ebre";
+		$data['body_footer_entity_image_url'] = base_url('assets/img/logo_iesebre_2010_100x36.jpg');
 		$data['body_footer_copyright_date'] = "2013";
 		$data['body_footer_wiki_url'] = "http://acacha.org/mediawiki/index.php/skeleton";
 		$data['body_footer_github_url'] = "https://github.com/acacha/skeleton";

@@ -276,12 +276,25 @@ class Skeleton_auth_model extends CI_Model
 	 * @author Mathew
 	 */
 
+	public function hash_password($password, $salt=false, $use_sha1_override=FALSE)
+	{
+		if (empty($password))
+		{
+			return FALSE;
+		}
+
+		return  md5($password);
+		
+	}
+
 	/**
 	 * Hashes the password to be stored in the database.
 	 *
 	 * @return void
 	 * @author Mathew
 	 **/
+
+	/*
 	public function hash_password($password, $salt=false, $use_sha1_override=FALSE)
 	{
 		if (empty($password))
@@ -307,6 +320,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 	}
 
+*/
 	/**
 	 * This function takes a password and validates it
 	 * against an entry in the users table.
@@ -314,6 +328,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @return void
 	 * @author Mathew
 	 **/
+	/*
 	public function hash_password_db($id, $password, $use_sha1_override=FALSE)
 	{
 		if (empty($id) || empty($password))
@@ -367,6 +382,54 @@ class Skeleton_auth_model extends CI_Model
 			return FALSE;
 		}
 	}
+	*/
+
+	public function hash_password_db($id, $password, $use_sha1_override=FALSE)
+	{
+		if (empty($id) || empty($password))
+		{
+			return FALSE;
+		}
+
+		$this->trigger_events('extra_where');
+
+		$query = $this->db->select('password, salt')
+		                  ->where('id', $id)
+		                  ->limit(1)
+		                  ->get($this->tables['users']);
+
+		$hash_password_db = $query->row();
+
+		if ($query->num_rows() !== 1)
+		{
+			return FALSE;
+		}
+
+		// bcrypt
+		if ($use_sha1_override === FALSE && $this->hash_method == 'bcrypt')
+		{
+			if ($this->bcrypt->verify($password,$hash_password_db->password))
+			{
+				return TRUE;
+			}
+
+			return FALSE;
+		}
+
+		$db_password = md5($password);
+		
+
+		if($db_password == $hash_password_db->password)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+
 
 	/**
 	 * Generates a random salt value for forgotten passwords or any other keys. Uses SHA1.
