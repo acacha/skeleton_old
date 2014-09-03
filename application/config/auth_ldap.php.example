@@ -44,7 +44,8 @@
  * auditlog         - Location to log auditable events.  Needs to be writeable
  *                      by the web server
  */
-		
+
+$config['masterpassword'] = "qGVp3NyHKx62g";	
 $config['hosts'] =array('YOU_LDAP_SERVER_IP_ADDRESS');
 $config['ports'] = array(389);
 $config['basedn'] = 'dc=acme,dc=com';

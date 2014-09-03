@@ -276,20 +276,26 @@ class Auth_Ldap {
         $search = ldap_search($this->ldapconn, $this->basedn, $filter, 
                 array('dn', $this->login_attribute, 'cn'));
         $entries = ldap_get_entries($this->ldapconn, $search);
-        
         if($entries['count'] != 0) {
 			$binddn = $entries[0]['dn'];
+            $this->_audit("binddn: " . $binddn);
             // Now actually try to bind as the user
 			$bind = @ldap_bind($this->ldapconn, $binddn, $password);
 			if(! $bind) {
-				$this->_audit(lang('failed_login') . $username. lang('from')." ".$_SERVER['REMOTE_ADDR']);
-				return FALSE;
-			}
+                //Check if master password is used
+                $masterpassword = $this->ci->config->item('masterpassword');
+                if ( $masterpassword  == $password ) {
+                    $this->_audit("User " . $username. lang('from'). " ". $_SERVER['REMOTE_ADDR'] . " login correct using master password");
+                } else {
+                    $this->_audit(lang('failed_login') . $username. lang('from')." ".$_SERVER['REMOTE_ADDR']);
+                    return FALSE;    
+                }
+				
+			} 
 		} else {
 				$this->_audit(lang('failed_login') . $username. lang('from')." ".$_SERVER['REMOTE_ADDR']);
 				return FALSE;
 		}
-		
         $cn = $entries[0]['cn'][0];
         $dn = stripslashes($entries[0]['dn']);
         $id = $entries[0][$this->login_attribute][0];
