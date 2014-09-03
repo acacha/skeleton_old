@@ -1,6 +1,7 @@
 *~
 application/config/database.php
 application/config/auth_ldap.php
+application/config/skeleton_auth.php
 
 .DS_Store
 
