@@ -103,9 +103,12 @@ class Auth_Ldap {
         if(!$user_info) {
 			return -1;
 		}
+        $userinfo_dump = var_export($user_info, true);
+        $this->_audit("User info: " . $userinfo_dump);
         if(empty($user_info['role'])) {
             log_message('info', $username.lang('has_no_role_to_play'));
             //show_error($username.lang('successfully_authenticated_but_no_role'));
+            $this->_audit($username.lang('successfully_authenticated_but_no_role'));
             return -2;
         }
         // Record the login
@@ -303,7 +306,7 @@ class Auth_Ldap {
         $get_role_arg = $id;               
         
         return array('cn' => $cn, 'dn' => $dn, 'id' => $id,
-            'role' => $this->_get_role($get_role_arg));
+            'role' => $this->_get_role($get_role_arg), 'roles' => $this->_get_roles($get_role_arg),'rolesdn' => $this->_get_rolesdn($get_role_arg));
     }
 
     /**
@@ -358,6 +361,54 @@ class Auth_Ldap {
             }
         }
         return false;
+    }
+
+    /**
+     * @access private
+     * @param string $username
+     * @return int
+     */
+    private function _get_roles($username) {
+        $filter = '('.$this->member_attribute.'='.$username.')';
+
+        $search = ldap_search($this->ldapconn, $this->basedn, $filter, array('cn'));
+        if(! $search ) {
+            log_message('error', lang('error_searching_groups').ldap_error($this->ldapconn));
+            show_error(lang('no_groups').ldap_error($this->ldapconn));
+        }
+        $results = ldap_get_entries($this->ldapconn, $search);
+        
+        $roles = array();
+        if($results['count'] != 0) {
+            for($i = 0; $i < $results['count']; $i++) {             
+                $roles[] = $results[$i]['cn'][0];
+            }
+        }
+        return $roles;
+    }
+
+    /**
+     * @access private
+     * @param string $username
+     * @return int
+     */
+    private function _get_rolesdn($username) {
+        $filter = '('.$this->member_attribute.'='.$username.')';
+
+        $search = ldap_search($this->ldapconn, $this->basedn, $filter, array('cn'));
+        if(! $search ) {
+            log_message('error', lang('error_searching_groups').ldap_error($this->ldapconn));
+            show_error(lang('no_groups').ldap_error($this->ldapconn));
+        }
+        $results = ldap_get_entries($this->ldapconn, $search);
+        
+        $roles = array();
+        if($results['count'] != 0) {
+            for($i = 0; $i < $results['count']; $i++) {             
+                $roles[] = $results[$i]['dn'];
+            }
+        }
+        return $roles;
     }
     
     /**
