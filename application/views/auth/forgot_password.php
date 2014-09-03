@@ -86,7 +86,7 @@
       
       <?php echo sprintf(lang("do_you_not_remember_your_identity"),strtolower(lang($identity)));?> 
       <br/>
-	  <a href="<?php echo base_url('index.php/skeleton_auth/auth/forgot_password_' . $alternative_identity)?>">
+	  <a href="<?php echo base_url('index.php/skeleton_auth/ebre_escool_auth/forgot_password_' . $alternative_identity)?>">
 		   <?php echo sprintf(lang("try_with_your_identity"),strtolower(lang($alternative_identity)));?>
        </a>
              

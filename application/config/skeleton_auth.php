@@ -7,13 +7,13 @@
 | 
 */
 $config['login_appname'] = "Intranet";
-$config['login_entity'] = "Institut del Ebre";
+$config['login_entity'] = "Institut de l'Ebre";
 
 $config['copyright_url'] = "http://acacha.org/mediawiki/index.php/ebre-escool";
 $config['copyright_app_name'] = "Ebre-escool Intranet";
-$config['copyright_entity_name'] = "Ebretic Enginyeria SL";
-$config['copyright_entity_url'] = "http://www.ebretic.com";
-$config['copyright_entity_url_name'] = "www.ebretic.com";
+$config['copyright_entity_name'] = "Institut de l'Ebre";
+$config['copyright_entity_url'] = "http://www.iesebre.com";
+$config['copyright_entity_url_name'] = "www.iesebre.com";
 $config['copyright_authors_text'] ='Sergi Tur Badenas';
 $config['copyright_authors_html'] ='<a href="http://acacha.org">Sergi Tur Badenas</a>';
 
@@ -305,8 +305,8 @@ $config['max_rounds']     = 9;
  | appropriately. If this variable set to 0, there is no maximum.
  */
 $config['site_title']                 = "Institut de l'Ebre - intranet";       // Site Title, example.com
-$config['organization']               = "Institut de l'Ebre";       // Organization name, EBRETIC ENGINYERIA SL
-$config['app_name']                   = "Intranet";       // Organization name, EBRETIC ENGINYERIA SL
+$config['organization']               = "Institut de l'Ebre";       // Organization name, Institut de l'Ebre
+$config['app_name']                   = "Intranet";       // Organization name, Institut de l'Ebre
 $config['admin_email']                = "maninfo@iesebre.com"; // Admin Email, admin@example.com
 $config['default_group']              = 'intranet_readonly';           // Default group, use name
 $config['admin_group']                = 'intranet_admin';             // Default administrators group, use name

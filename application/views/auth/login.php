@@ -119,17 +119,19 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
           <?php endforeach; ?>	
          </select>
          
+         <!--
          <br/>
          
          <label class="checkbox">
-          <input type="checkbox" value="remember-me"> <?php echo lang('remember');?>
+           <input type="checkbox" value="remember-me"> <?php echo lang('remember');?> 
          </label>
+         -->
 
         <br/>
         <button class="btn btn-large btn-primary" type="submit"><?php echo lang('Login');?></button>
        
        <?php echo form_close(); ?>
-       <center><p><a href="<?php echo $register_url;?>"><?php echo lang('Register');?></a></p></center>
+       <!--<center><p><a href="<?php echo $register_url;?>"><?php echo lang('Register');?></a></p></center>-->
        <center><p><a href="forgot_password"><?php echo lang('login_forgot_password');?></a></p></center>
        <br/>
        
