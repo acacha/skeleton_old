@@ -1145,10 +1145,31 @@ class Skeleton_auth_model extends CI_Model
 		$salt       = $this->store_salt ? $this->salt() : FALSE;
 		$password   = $this->hash_password($password, $salt);
 
+		$person_id = 0;
+		//Search person_id
+
+		//TODO: check if table person exists
+		$table_person_exists =  true;
+
+		if ($table_person_exists) {
+			//Search if exists a person with username in table person
+			//Example SQL: SELECT `person_id` FROM `person` WHERE username_original_ldap="dsubirats"
+			$query = $this->db->select('person_id')
+		                  ->where('username_original_ldap', $username)
+		                  ->limit(1)
+		                  ->get('person');
+
+			if ($query->num_rows() === 1)	{
+				$person = $query->row();
+				$person_id = $person->person_id;
+			}
+		}
+
 		// Users table.
 		$data = array(
 		    'username'   => $username,
 		    'password'   => $password,
+		    'person_id'  => $person_id,	
 		    'email'      => $email,
 		    'ip_address' => $ip_address,
 		    'created_on' => date('Y-m-d H:i:s'),

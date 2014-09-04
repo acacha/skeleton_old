@@ -117,7 +117,11 @@ class Auth_Ldap {
         // Set the session data
         $customdata = array('username' => $username,
                             'cn' => $user_info['cn'],
+                            'dn' => $user_info['dn'],
                             'role' => $user_info['role'],
+                            'roles' => $user_info['roles'],
+                            'rolesdn' => $user_info['rolesdn'],
+
                             'logged_in' => TRUE);
     
         $this->ci->session->set_userdata($customdata);
