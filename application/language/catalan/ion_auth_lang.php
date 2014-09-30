@@ -57,3 +57,5 @@ $lang['email_activation_subject']            = 'Activació del compte';
 
 $lang['maintenance_mode_login_error_message']="Login incorrecte!";
 $lang['login_unsuccessful_not_allowed_role'] = "El login és correcte però l'usuari no té un rol adequat per accedir a l'aplicació";
+
+$lang['login_unsuccessful_not_registered_but_ldap_user_ok'] = "Error. El login ldap és correcte però no hi ha dades d'usuari a la base de dades. Aviseu l'administrador del sistema";

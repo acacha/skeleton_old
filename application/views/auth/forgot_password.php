@@ -64,7 +64,7 @@
 
  <center><div class="text-error"><div id="infoMessage"><?php echo $message;?></div></div>
  
- <?php echo form_open(base_url('index.php/skeleton_auth/auth/forgot_password_'.$identity), array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
+ <?php echo form_open(base_url($forgot_password_submit_url.$identity), array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
   <h3><?php echo lang('forgot_password_heading');?></h3>
   <p><?php echo sprintf(lang('forgot_password_subheading'),strtolower(lang($identity)));?></p>
       <p>

@@ -14,6 +14,10 @@ class Auth extends CI_Controller {
     public $reset_password_page ="skeleton_auth/auth/reset_password/";
     public $reset_password_view ="auth/reset_password";
     public $deactive_user_view ="auth/deactivate_user";
+
+    public $reset_form_submit_url = 'skeleton_auth/auth/reset_password/';
+    public $forgotten_password_email_template = "skeleton_auth/auth/reset_password";
+    public $forgot_password_submit_url='index.php/skeleton_auth/auth/forgot_password_';
     
     public $create_user_view ="auth/create_user";    
     public $edit_user_view = "auth/edit_user";
@@ -299,9 +303,11 @@ function index()
 	}
 	
 	protected function _forgot_password_by_identity($identity="email") {	
-		
+
 		$this->data['identity']="email";
 		$this->data['alternative_identity']="username";
+
+		$this->data['forgot_password_submit_url']= $this->forgot_password_submit_url;
 		
 		if ($identity == "username" ) {
 			$this->form_validation->set_rules('username', $this->lang->line('forgot_password_validation_username_label'), 'required');		
@@ -315,12 +321,12 @@ function index()
 		}
 			
 		if ($this->form_validation->run() == false)
-		{
+		{			
 			//set any errors and display the form
 			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 			$this->data['realms'] = $this->forgot_password_realms;
 	     	$this->data['default_realm'] = $this->config->item('default_forgot_password_realm', 'skeleton_auth');
-			$this->_render_page($this->forgot_password_view , $this->data);
+	     	$this->_render_page($this->forgot_password_view , $this->data);
 		}
 		else
 		{
@@ -335,14 +341,18 @@ function index()
 				$username=$this->check_identity_ldap($identity);
 				//Be sure user is in mysql database to be able to insert forgotten password code!
 				// Similar to Ldap login, if first time user is added to mysql database
-				$this->skeleton_auth->add_user_ifnotexists($username);
+				$create_mysql_user_if_exists_on_ldap = $this->config->item('create_mysql_user_if_exists_on_ldap', 'skeleton_auth');
+				if ($create_mysql_user_if_exists_on_ldap) {
+					$this->skeleton_auth->add_user_ifnotexists($username);
+				} 
 			} else {
 				//REALM=MySQL
 				$identity_value = $this->check_identity($identity);
 			}
-			
+
 			// Same method for Ldap and Email realms. 
 			//run the forgotten password method to email an activation code to the user
+			$this->skeleton_auth->forgotten_password_email_template=$this->forgotten_password_email_template;
 			$forgotten = $this->skeleton_auth->forgotten_password($identity_post_value,$identity,$realm);
 			if ($forgotten)
 			{
@@ -362,6 +372,7 @@ function index()
 	public function forgot_password_email()
 	{
 		$this->_set_common_data();
+		
 		//DEFAULT: forgot_password_email();
 		$this->_forgot_password_by_identity();
 	}
@@ -402,6 +413,8 @@ function index()
 	
 	public function check_identity_ldap($identity="email") {
 		
+		//Debug:
+		//echo "<br/>check_identity_ldap. Identity: " . $identity . "<br/>";
 		$identity_value = $this->input->post($identity);
 		
 		$result = $this->auth_ldap->check_identity_ldap($identity,$identity_value);
@@ -453,6 +466,8 @@ function index()
 				$this->data['csrf'] = $csrf;
 				$this->data['code'] = $code;
 
+				$this->data['reset_form_submit_url'] = $this->reset_form_submit_url;
+
 				//render
 				$this->_render_page($this->reset_password_view, $this->data);
 			}
@@ -475,7 +490,6 @@ function index()
 					
 					$change_result = $this->skeleton_auth->reset_password($identity, $this->input->post('new'));
 
-					
 					if ($change_result)
 					{
 						//if the password was successfully changed

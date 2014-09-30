@@ -14,6 +14,9 @@
 
 class skeleton_auth
 {
+
+	public $forgotten_password_email_template="skeleton_auth/auth/reset_password";
+
 	/**
 	 * account status ('not_activated', etc ...)
 	 *
@@ -128,11 +131,53 @@ public $_cache_user_in_group;
 	}
 
 
+	public function get_user_info_by_email($email) {
+
+		$this->db->select('id, forgotten_password_code, username, person_email, person_secondary_email');
+		$this->db->where(array( 'person_email' => $email));
+		$this->db->or_where(array( "person_secondary_email" => $email));
+		$this->db->join('person','person.person_id = users.person_id');
+		$this->db->from('users');
+		$this->db->limit(1);
+
+		$query = $this->db->get();
+		
+		if ($query->num_rows() == 1){ 
+			return $query->row();
+		}
+		else {
+			return false;
+		}
+
+	}
+
+	public function get_user_info_by_username($username) {
+
+		$this->db->select('id, forgotten_password_code, username, person_email, person_secondary_email');
+		$this->db->where(array( 'username' => $username));
+		$this->db->from('users');
+		$this->db->join('person','person.person_id = users.person_id');
+		$this->db->limit(1);
+
+		$query = $this->db->get();
+
+		//echo $this->db->last_query();
+		
+		if ($query->num_rows() == 1){ 
+			return $query->row();
+		}
+		else {
+			return false;
+		}
+
+	}
+
+
 	/**
 	 * forgotten password feature
 	 *
 	 * @return mixed  boolian / array
-	 * @author Mathew
+	 * @author Mathew. Sergi Tur Badenas
 	 **/
 	public function forgotten_password($identity,$identity_key="email",$realm="mysql")    //changed $email to $identity
 	{
@@ -140,9 +185,16 @@ public $_cache_user_in_group;
 		if ( $this->skeleton_auth_model->forgotten_password($identity,$identity_key,$realm) )   //changed
 		{
 			// Get user information
-			$this->db->where(array( $identity_key => $identity));
-			$this->db->or_where(array( "secondary_email" => $identity));			
-			$user = $this->users()->row();//changed to get_user_by_identity from email
+			$user = null;
+			if ($identity_key=="email") {
+				$user = $this->get_user_info_by_email($identity);
+			} else if ($identity_key=="username") {
+				$user = $this->get_user_info_by_username($identity);
+			} else {
+				return false;
+			}
+			//DEBUG:
+			//var_export($user);
 			
 			if ($user)
 			{
@@ -161,14 +213,20 @@ public $_cache_user_in_group;
 		
 					$data['organization'] = $this->config->item('organization', 'skeleton_auth');	
 					$data['app_name'] = $this->config->item('app_name', 'skeleton_auth');	
+					//Example: "skeleton_auth/ebre_escool_auth/reset_password":
+					$data['forgotten_password_email_template'] = $this->forgotten_password_email_template ; 
 					$message = $this->load->view($this->config->item('email_templates', 'skeleton_auth').$this->config->item('email_forgot_password', 'skeleton_auth'), $data, true);
 					
 					$this->email->clear();
 					$this->email->from($this->config->item('admin_email', 'skeleton_auth'), $this->config->item('site_title', 'skeleton_auth'));
 					
 					$email_to_send_forgotten_password = $this->config->item('email_to_send_forgotten_password', 'skeleton_auth');
-					$this->email->to($user->$email_to_send_forgotten_password);
 					
+					$this->email->to($user->$email_to_send_forgotten_password);
+
+					//DEBUG:
+					//echo "Preparing to send email! TO: " . $user->$email_to_send_forgotten_password . "<br/>";
+
 					$this->email->subject($this->config->item('site_title', 'skeleton_auth') . ' - ' . $this->lang->line('email_forgotten_password_subject'));
 					$this->email->message($message);
 					
@@ -429,7 +487,8 @@ public $_cache_user_in_group;
 	{
 		$this->skeleton_auth_model->trigger_events('logged_in');
 
-		return (bool) $this->session->userdata('identity');
+		//return (bool) $this->session->userdata('identity');
+		return (bool) $this->session->userdata('logged_in');
 	}
 
 	/**

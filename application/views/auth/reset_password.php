@@ -63,7 +63,7 @@
 
  <center><div class="text-error"><div id="infoMessage"><?php echo $message;?></div></div>
  
- <?php echo form_open('skeleton_auth/auth/reset_password/' . $code, array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
+ <?php echo form_open($reset_form_submit_url . $code, array('class' => 'form-signin', 'style' => 'max-width: 600px' )); ?>
   <h3><?php echo lang('reset_password_heading');?></h3>
   <p><?php echo lang('introduce_new_password');?></p>
       
