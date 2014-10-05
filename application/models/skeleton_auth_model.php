@@ -644,7 +644,7 @@ class Skeleton_auth_model extends CI_Model
 		
 		$attrs['sambaLMPassword']= $lm;
 		$attrs['sambaNTPassword']= $nt;
-		$attrs['sambaPwdLastSet']= date('U');
+		//$attrs['sambaPwdLastSet']= date('U');
 		$attrs['sambaBadPasswordCount']= "0";
 		$attrs['sambaBadPasswordTime']= "0";
 		return($attrs);
@@ -674,8 +674,8 @@ class Skeleton_auth_model extends CI_Model
 		}
 		
 		$attrs['userPassword']= $newpass;
-
-        // For posixUsers - Set the last changed value.
+		
+		// For posixUsers - Set the last changed value.
         if($shadowAccountBool){
             $attrs['shadowLastChange'] = (int)(date("U") / 86400);
         }
@@ -729,6 +729,10 @@ class Skeleton_auth_model extends CI_Model
 		$this->_init_ldap();
 		
 		if ($this->_bind()) {
+			//Debug:
+			//echo "ldap modify:<br/>";
+			//echo "user_dn: " . $user_dn . "<br/>";
+			//echo "attrs: " . var_export($attrs) . "<br/>";
 			if (ldap_modify($this->ldapconn,$user_dn,$attrs) === false){
 				$error = ldap_error($this->ldapconn);
 				$errno = ldap_errno($this->ldapconn);
@@ -768,15 +772,12 @@ class Skeleton_auth_model extends CI_Model
 	
 	public function reset_password_ldap($identity, $new_password) {
 		
-		
 		$this->trigger_events('pre_change_password');
 		
 		
 		$dn = $this->getDNByIdentity($identity);
 		
-		
 		$return_value = $this->change_ldap_password($dn, $new_password);
-		
 				
 		if ($return_value)
 		{
@@ -822,6 +823,10 @@ class Skeleton_auth_model extends CI_Model
 		//also clear the forgotten password code
 		$data = array(
 		    'password' => $new_password,
+		    'initial_password' => '',
+            'force_change_password_next_login' => 'n',
+            'last_modification_user' => $result->id,
+			'active' => 1, 
 		    'remember_code' => NULL,
 		    'forgotten_password_code' => NULL,
 		    'forgotten_password_time' => NULL,
@@ -866,11 +871,23 @@ class Skeleton_auth_model extends CI_Model
 		
 		$realm= $query->row()->forgotten_password_realm;
 
-		if ($realm == "ldap")  {
-			return $this->reset_password_ldap($identity, $new_password);
+		$force_change_on_both_realms = $this->config->item('force_change_on_both_realms', 'skeleton_auth');
+		if ($force_change_on_both_realms) {
+			$result = $this->reset_password_ldap($identity, $new_password);
+			if ($result) {
+				return $this->reset_password_mysql($identity, $new_password);	
+			} else {
+				return false;
+			}
+			
 		} else {
-			return $this->reset_password_mysql($identity, $new_password);
+			if ($realm == "ldap")  {
+				return $this->reset_password_ldap($identity, $new_password);
+			} else {
+				return $this->reset_password_mysql($identity, $new_password);
+			}	
 		}
+		
 	}
 
 	/**
@@ -1004,6 +1021,13 @@ class Skeleton_auth_model extends CI_Model
 	 **/
 	public function forgotten_password($identity,$identity_column="",$realm="mysql")
 	{
+		
+		//DEBUG:
+		//echo "parameters:<br/>";
+		//echo "identity: " . $identity . "<br/>";
+		//echo "identity_column: " . $identity_column . "<br/>";
+		//echo "realm: " . $realm . "<br/>";
+
 		if (empty($identity))
 		{
 			$this->trigger_events(array('post_forgotten_password', 'post_forgotten_password_unsuccessful'));
@@ -1031,16 +1055,37 @@ class Skeleton_auth_model extends CI_Model
 		    'forgotten_password_realm' => $realm
 		);
 		
-		$identity_database_column="";
+		$identity_field="";
 		if ($identity_column == "") {
-			$identity_database_column=$this->identity_column;
+			$identity_field=$this->identity_column;
 		} else {
-			$identity_database_column=$identity_column;
+			if ($identity_column =="email") {
+				$identity_field="person_email";
+			} elseif ($identity_column=="username") {
+				$identity_field="username";
+			} else {
+				return false;	
+			}
+		}
+
+		/* Example:
+		UPDATE `users`
+		INNER JOIN person ON person.person_id = users.person_id
+		SET `forgotten_password_code` = '19cea29fcb89c6ba137b58d4b79626cd', `forgotten_password_time` = 1412066629, `forgotten_password_realm` = 'ldap' 
+		WHERE `person_email` = 'sergiturbadenas@gmail.com' OR `person_secondary_email` = 'sergiturbadenas@gmail.com'
+		*/
+		$this->db->where(array( $identity_field => $identity));
+		if ($identity_field == "person_email") {
+			$this->db->or_where(array( "person_secondary_email" => $identity));	
+			$this->db->update($this->tables['users'] . " INNER JOIN person ON person.person_id = users.person_id", $update);
+		} elseif ($identity_field == "username") {
+			$this->db->update($this->tables['users'], $update);
+		} else {
+			return false;
 		}
 		
-		$this->db->where(array( $identity_database_column => $identity));
-		$this->db->or_where(array( "secondary_email" => $identity));
-		$this->db->update($this->tables['users'], $update);
+
+		//echo $this->db->last_query();
 		
 		$return = $this->db->affected_rows() == 1;
 
@@ -1318,20 +1363,37 @@ class Skeleton_auth_model extends CI_Model
 		$last_login;
 		$username=$identity;
 		$user = new stdClass;
+
+		$create_mysql_user_if_exists_on_ldap = $this->config->item('create_mysql_user_if_exists_on_ldap', 'skeleton_auth');
+		if (!$this->username_check($identity)) {
+			if ($create_mysql_user_if_exists_on_ldap) {
+				// ADD USER TO users table if not exists
+				$this->add_user_ifnotexists($identity,$password);			
+			} else {
+				//ERROR
+				$this->trigger_events('post_login_unsuccessful');
+				$this->set_error('login_unsuccessful_not_registered_but_ldap_user_ok');
+				return FALSE;
+			}
+		}
 		
-		// ADD USER TO users table if not exists
-		$this->add_user_ifnotexists($identity,$password);	
 		
 		if (!$this->username_check($identity)) {
-			//NOT EXISTS -> ADD/REGISTER
-			$additional_data = $this->auth_ldap->get_additional_data($identity);
-			$email=$this->auth_ldap->get_email($identity);
-			$id=$this->register($identity, $password, $email, $additional_data);
+			if ($create_mysql_user_if_exists_on_ldap) {
+				//NOT EXISTS -> ADD/REGISTER
+				$additional_data = $this->auth_ldap->get_additional_data($identity);
+				$email=$this->auth_ldap->get_email($identity);
+				$id=$this->register($identity, $password, $email, $additional_data);	
+			} else {
+				//ERROR
+				$this->trigger_events('post_login_unsuccessful');
+				$this->set_error('login_unsuccessful_not_registered');
+				return FALSE;
+			}
 		}
 
 		$database_user=$this->get_user_by_username($identity);
-		
-		$email=$database_user->email;
+
 		$id=$database_user->id;
 		$last_login=$database_user->last_login;
 		
@@ -1345,7 +1407,6 @@ class Skeleton_auth_model extends CI_Model
 		//SET SESSION DATA
 		$user->identity=$identity;
 		$user->username=$username;
-		$user->email=$email;
 		$user->id=$id;
 		$user->last_login=$last_login;
 		
@@ -2150,7 +2211,6 @@ class Skeleton_auth_model extends CI_Model
 		$session_data = array(
 		    'identity'             => $user->{$this->identity_column},
 		    'username'             => $user->username,
-		    'email'                => $user->email,
 		    'user_id'              => $user->id, //everyone likes to overwrite id so we'll use user_id
 		    'old_last_login'       => $user->last_login
 		);

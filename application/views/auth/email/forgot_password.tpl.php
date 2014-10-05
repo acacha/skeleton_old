@@ -2,7 +2,7 @@
 <body>
 Per iniciar el procés de restabliment de la contrasenya del vostre compte ( <?php echo $identity;?> ) de l'aplicació <?php echo $app_name; ?> de <?php echo $organization; ?>, feu clic a l'enllaç següent:
 
-<p>&nbsp;&nbsp;&nbsp;<?php echo anchor('skeleton_auth/auth/reset_password/'. $forgotten_password_code, lang('email_forgot_password_link'));?></p>
+<p>&nbsp;&nbsp;&nbsp;<?php echo anchor($forgotten_password_email_template. "/" .$forgotten_password_code, lang('email_forgot_password_link'));?></p>
 
 <p>Si en fer clic a l'enllaç anterior no es produeix cap acció, copieu l'URL i enganxeu-lo en una finestra nova del navegador.</p>
 
@@ -13,6 +13,6 @@ Per iniciar el procés de restabliment de la contrasenya del vostre compte ( <?p
 <p>Atentament,<br/>
 L'equip de manteniment de l'aplicació <?php echo $app_name; ?> de <?php echo $organization; ?></p>
 
-<p>Nota: Aquesta adreça electrònica no pot acceptar respostes. Per solucionar un problema o obtenir més informació sobre el compte, consulteu a l'administrador.</p>
+<p>Nota: Aquesta adreça electrònica no pot acceptar respostes. Per solucionar un problema o obtenir més informació sobre el compte, consulteu al vostre tutor.</p>
 </body>
 </html>

@@ -70,6 +70,7 @@ class Auth_Ldap {
         $this->hosts = $this->ci->config->item('hosts');
         $this->ports = $this->ci->config->item('ports');
         $this->basedn = $this->ci->config->item('basedn');
+        $this->active_users_basedn = $this->ci->config->item('active_users_basedn');
         $this->account_ou = $this->ci->config->item('account_ou');
         $this->login_attribute  = $this->ci->config->item('login_attribute');
         $this->use_ad = $this->ci->config->item('use_ad');
@@ -164,7 +165,7 @@ class Auth_Ldap {
     }
     
     public function check_identity_ldap($identity="email",$identity_value) {
-       
+
         foreach($this->hosts as $host) {
             $this->ldapconn = ldap_connect($host);
             if($this->ldapconn) {
@@ -212,7 +213,7 @@ class Auth_Ldap {
                                                 
         if ($identity=="email")	{
 			if ($alternativeemailattribute != "") {
-				$filter = '(|(' . $first_email_ldap_attribute . '='.$identity_value. ')('. $alternativeemailattribute . '='.$identity_value. '))';
+				$filter = '(|(' . $first_email_ldap_attribute . '='.trim($identity_value). ')('. $alternativeemailattribute . '='.trim($identity_value). '))';
 			} else {
 				$filter = '(' .  $first_email_ldap_attribute . '='.$identity_value. ')';
 			}
@@ -226,7 +227,10 @@ class Auth_Ldap {
 			array_push($required_attributes,$alternativeemailattribute);
 		}
         
-        $search = ldap_search($this->ldapconn, $this->basedn, $filter,$required_attributes);
+        //DEBUG:
+        //echo "basedn: " . $this->active_users_basedn . "<br/>";
+        //echo "filter: " . $filter . "<br/>";
+        $search = ldap_search($this->ldapconn, $this->active_users_basedn, $filter,$required_attributes);
         
         $entries = ldap_get_entries($this->ldapconn, $search);
         

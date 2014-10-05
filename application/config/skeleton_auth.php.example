@@ -92,7 +92,7 @@ $config['second_email_ldap_attribute'] = "email";
 | 
 | Example: email                                                            
 */                             
-$config['email_to_send_forgotten_password'] = "secondary_email";
+$config['email_to_send_forgotten_password'] = "person_secondary_email";
 
 
 /*
@@ -397,6 +397,20 @@ $config['message_start_delimiter'] = '<p>'; 	// Message start delimiter
 $config['message_end_delimiter']   = '</p>'; 	// Message end delimiter
 $config['error_start_delimiter']   = '<p>';		// Error mesage start delimiter
 $config['error_end_delimiter']     = '</p>';	// Error mesage end delimiter
+
+/*
+ | -------------------------------------------------------------------------
+ | Reset password feature have to change password in both ldap an mysql?
+ | -------------------------------------------------------------------------
+ */
+$config['force_change_on_both_realms'] = true;
+
+/*
+ | -------------------------------------------------------------------------
+ | Reset password feature have to change password in both ldap an mysql?
+ | -------------------------------------------------------------------------
+ */
+$config['create_mysql_user_if_exists_on_ldap'] = false;
 
 /* End of file skeleton_auth.php */
 /* Location: ./application/config/ion_auth.php */
