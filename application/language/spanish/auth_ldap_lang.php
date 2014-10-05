@@ -3,7 +3,7 @@
 * Name:  Auth Ldap Lang - English
 *
 * Author: Sergi Tur Badenas
-* 		  sergitur@ebretic.com
+* 		  sergiturbadenas@gmail.com
 *         @sergitur
 *
 *

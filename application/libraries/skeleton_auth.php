@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * 
- *  Created Sergi Tur (sergitur@ebretic.com)
+ *  Created Sergi Tur (sergiturbadenas@gmail.com)
  * 
  *  BASED ON: Ion Auth
  *

@@ -3,7 +3,7 @@
 * Name:  Auth Lang - Catalan
 *
 * Author: Sergi Tur Badenas
-* 		  sergitur@ebretic.com
+* 		  sergiturbadenas@gmail.com
 *         @acacha
 *
 * Created:  17/08/2013

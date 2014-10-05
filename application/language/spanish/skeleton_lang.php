@@ -4,7 +4,7 @@
  *  Name:  skeleton lang - English
  *
  * Author: Sergi Tur Badenas
- * 		  sergitur@ebretic.com
+ * 		  sergiturbadenas@gmail.com
  *
  * Created:  15.09.2013
  *
