@@ -54,6 +54,7 @@ UNLOCK TABLES;
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `person_id` int(11) NOT NULL,
   `ip_address` varbinary(16) NOT NULL,
   `username` varchar(100) NOT NULL,
   `password` varchar(80) NOT NULL,
@@ -74,6 +75,42 @@ CREATE TABLE IF NOT EXISTS `users` (
   `phone` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de la taula `person`
+--
+
+CREATE TABLE IF NOT EXISTS `person` (
+  `person_id` int(11) NOT NULL AUTO_INCREMENT,
+  `person_givenName` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_sn1` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_sn2` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_email` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_secondary_email` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_official_id` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_official_id_type` int(11) NOT NULL,
+  `person_date_of_birth` date NOT NULL,
+  `person_gender` enum('F','M') CHARACTER SET utf8 NOT NULL,
+  `person_secondary_official_id` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_secondary_official_id_type` int(11) NOT NULL,
+  `person_homePostalAddress` varchar(750) CHARACTER SET utf8 NOT NULL,
+  `person_photo` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_locality_id` int(11) NOT NULL,
+  `person_telephoneNumber` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_mobile` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `person_bank_account_id` int(11) NOT NULL,
+  `person_notes` text CHARACTER SET utf8 NOT NULL,
+  `person_entryDate` datetime NOT NULL,
+  `person_last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `person_creationUserId` int(11) DEFAULT NULL,
+  `person_lastupdateUserId` int(11) DEFAULT NULL,
+  `person_markedForDeletion` enum('n','y') NOT NULL DEFAULT 'n',
+  `person_markedForDeletionDate` datetime NOT NULL,
+  `username_original_ldap` varchar(255) NOT NULL,
+  PRIMARY KEY (`person_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Estructura de la taula `groups`
