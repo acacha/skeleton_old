@@ -37,7 +37,7 @@ class skeleton_main extends CI_Controller {
 		$this->load->library('skeleton_auth',$params);
 		
 		//CONFIG skeleton_auth library:
-		$this->skeleton_auth->login_page="skeleton_auth/ebre_escool_auth/login";
+		$this->skeleton_auth->login_page="skeleton_auth/auth/login";
 		
 		//LOAD SKELETON_AUTH MODEL
 		$this->load->model('skeleton_auth_model');
