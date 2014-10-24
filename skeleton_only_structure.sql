@@ -163,19 +163,20 @@ CREATE TABLE IF NOT EXISTS `user_preferences` (
 
 
 CREATE TABLE IF NOT EXISTS `organizational_unit` (
-  `organizational_unitId` int(11) NOT NULL AUTO_INCREMENT,
-  `externalCode` int(11) NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `shortName` varchar(150) NOT NULL,
-  `description` text,
-  `entryDate` datetime NOT NULL,
-  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `creationUserId` int(11) DEFAULT NULL,
-  `lastupdateUserId` int(11) DEFAULT NULL,
-  `location` int(11) DEFAULT NULL,
-  `markedForDeletion` enum('n','y') NOT NULL,
-  `markedForDeletionDate` datetime NOT NULL,
-  PRIMARY KEY (`organizational_unitId`)
+  `organizational_unit_Id` int(11) NOT NULL AUTO_INCREMENT,
+  `organizational_unit_externalCode` int(11) NOT NULL,
+  `organizational_unit_name` varchar(150) NOT NULL,
+  `organizational_unit_shortName` varchar(150) NOT NULL,
+  `organizational_unit_description` text,
+  `organizational_unit_parent` int(11) NOT NULL,
+  `organizational_unit_entryDate` datetime NOT NULL,
+  `organizational_unit_last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `organizational_unit_creationUserId` int(11) DEFAULT NULL,
+  `organizational_unit_lastupdateUserId` int(11) DEFAULT NULL,
+  `organizational_unit_location` int(11) DEFAULT NULL,
+  `organizational_unit_markedForDeletion` enum('n','y') NOT NULL,
+  `organizational_unit_markedForDeletionDate` datetime NOT NULL,
+  PRIMARY KEY (`organizational_unit_Id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `location` (
