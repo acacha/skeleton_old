@@ -13,7 +13,7 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
 }
 
 ?>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" itemscope itemtype="http://schema.org/Other">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" itemscope itemtype="http://schema.org/WebPage">
   <head>
       <title><?php echo $login_appname . ". " . $login_entity;?></title>
       <meta charset="utf-8">
@@ -21,12 +21,11 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
       <meta name="description" content="Login form. <?php echo $login_appname;?>">
       <meta name="author" content="<?php echo $copyright_authors_text; ?>">
 
-      <!-- Actualitza l'etiqueta html perquè inclogui els atributs itemscope i itemtype. -->
-
-    <!-- Afegeix les tres etiquetes següents a la capçalera. -->
-    <meta itemprop="name" content="Ebre-escool és cool!">
-    <meta itemprop="description" content="Ebre-escool és una aplicació web de gestió de centres educatius amb un munt de funcionalitats útils per al dia a dia del centre.">
-    <meta itemprop="image" content="https://lh3.googleusercontent.com/-ZYAMBsOEXAI/AAAAAAAAAAI/AAAAAAAAAAw/__FQ8FLZ4Lc/s120-c/photo.jpg">
+      <!-- schema.org https://developers.google.com/+/web/snippet/ Google Plus
+        https://support.google.com/webmasters/answer/1211158-->
+      <meta itemprop="name" content="Ebre-escool és cool!">
+      <meta itemprop="description" content="Ebre-escool és una aplicació web de gestió de centres educatius amb un munt de funcionalitats útils per al dia a dia del centre.">
+      <meta itemprop="image" content="https://lh3.googleusercontent.com/-ZYAMBsOEXAI/AAAAAAAAAAI/AAAAAAAAAAw/__FQ8FLZ4Lc/s120-c/photo.jpg">
       
       <!-- FAVICON-->    
 	  <link rel="shortcut icon" href="assets/icon/favicon.png">
