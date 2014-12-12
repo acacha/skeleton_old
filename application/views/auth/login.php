@@ -33,8 +33,8 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
    <!-- CSS PROPIS -->
 
        <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/skeleton/css/bootstrap-select.min.css')?>"/>
-
-       
+       <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/skeleton/css/font-awesome.min.css')?>"/>
+              
        <link type="text/css" rel="stylesheet" href="<?php echo $bootstrap_combined_url;?>" /> 
    
 
