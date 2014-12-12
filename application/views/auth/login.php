@@ -77,6 +77,10 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
 		});
    </script>
 
+  <!-- Google Plus -->
+  <script src="https://apis.google.com/js/platform.js" async defer>
+    {lang: 'ca'}
+  </script>
 
   </head>
 
