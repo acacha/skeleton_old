@@ -384,7 +384,7 @@ class Skeleton_auth_model extends CI_Model
 	}
 	*/
 
-	public function hash_password_db($id, $password, $use_sha1_override=FALSE,$already_hashed=FALSE)
+	public function hash_password_db($id, $password, $use_sha1_override=FALSE, $already_hashed =FALSE )
 	{
 		if (empty($id) || empty($password))
 		{
@@ -1263,7 +1263,7 @@ class Skeleton_auth_model extends CI_Model
 		return (isset($id)) ? $id : FALSE;
 	}
 	
-	public function login($identity, $password, $remember = FALSE,$password_is_hashed=TRUE)
+	public function login($identity, $password, $remember = FALSE,$password_is_hashed = FALSE)
 	{
 		//GET REALM
 		switch ($this->realm) {
@@ -1485,7 +1485,7 @@ class Skeleton_auth_model extends CI_Model
 
 		$this->trigger_events('extra_where');
 
-		$query = $this->db->select($this->identity_column . ', username, id, active')
+		$query = $this->db->select($this->identity_column . ', username, id, active, last_login')
 		                  ->where($this->identity_column, $this->db->escape_str($identity))
 		                  ->limit(1)
 		                  ->get($this->tables['users']);
@@ -1505,7 +1505,7 @@ class Skeleton_auth_model extends CI_Model
 		{
 			$user = $query->row();
 
-			$password = $this->hash_password_db($user->id, $password,$password_is_hashed);
+			$password = $this->hash_password_db($user->id, $password,false,$password_is_hashed);
 			if ($password === TRUE)
 			{
 				if ($user->active == 0)
