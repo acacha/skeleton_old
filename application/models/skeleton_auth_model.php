@@ -384,7 +384,7 @@ class Skeleton_auth_model extends CI_Model
 	}
 	*/
 
-	public function hash_password_db($id, $password, $use_sha1_override=FALSE)
+	public function hash_password_db($id, $password, $use_sha1_override=FALSE,$already_hashed=FALSE)
 	{
 		if (empty($id) || empty($password))
 		{
@@ -416,8 +416,10 @@ class Skeleton_auth_model extends CI_Model
 			return FALSE;
 		}
 
-		$db_password = md5($password);
-		
+		$db_password = $password;
+		if (!$already_hashed) {
+			$db_password = md5($password);
+		}	
 
 		if($db_password == $hash_password_db->password)
 		{
@@ -1261,18 +1263,18 @@ class Skeleton_auth_model extends CI_Model
 		return (isset($id)) ? $id : FALSE;
 	}
 	
-	public function login($identity, $password, $remember = FALSE)
+	public function login($identity, $password, $remember = FALSE,$password_is_hashed=TRUE)
 	{
 		//GET REALM
 		switch ($this->realm) {
 			case "mysql":
-				return $this->login_mysql($identity, $password, $remember);
+				return $this->login_mysql($identity, $password, $remember,$password_is_hashed);
 				break;
 			case "ldap":
 				return $this->login_ldap($identity, $password, $remember);
 				break;
 			default:
-				return $this->login_mysql($identity, $password, $remember);
+				return $this->login_mysql($identity, $password, $remember,$password_is_hashed);
 				break;
 		}
 		
@@ -1471,7 +1473,7 @@ class Skeleton_auth_model extends CI_Model
 	 * @return bool
 	 * @author Mathew
 	 **/
-	public function login_mysql($identity, $password, $remember=FALSE)
+	public function login_mysql($identity, $password, $remember=FALSE,$password_is_hashed=FALSE)
 	{
 		$this->trigger_events('pre_login');
 
@@ -1483,7 +1485,7 @@ class Skeleton_auth_model extends CI_Model
 
 		$this->trigger_events('extra_where');
 
-		$query = $this->db->select($this->identity_column . ', username, email, id, password, active, last_login')
+		$query = $this->db->select($this->identity_column . ', username, id, active')
 		                  ->where($this->identity_column, $this->db->escape_str($identity))
 		                  ->limit(1)
 		                  ->get($this->tables['users']);
@@ -1503,7 +1505,7 @@ class Skeleton_auth_model extends CI_Model
 		{
 			$user = $query->row();
 
-			$password = $this->hash_password_db($user->id, $password);
+			$password = $this->hash_password_db($user->id, $password,$password_is_hashed);
 			if ($password === TRUE)
 			{
 				if ($user->active == 0)
