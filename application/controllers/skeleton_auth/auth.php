@@ -156,13 +156,15 @@ function index()
 			//check to see if the user is logging in
 			//check for "remember me"
 			$remember = (bool) $this->input->post('remember');
+
+			$identity = $this->skeleton_auth->check_if_identity_is_email($this->input->post('identity'));
 					
-			if ($this->skeleton_auth->login($this->input->post('identity'), $this->input->post('password'), $remember))
+			if ($this->skeleton_auth->login($identity, $this->input->post('password'), $remember))
 			{
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->skeleton_auth->messages());
-				$this->on_exit_login_hook($this->input->post('identity'));
+				$this->on_exit_login_hook($identity);
 				redirect($this->after_succesful_login_page, 'refresh');
 			}
 			else

@@ -186,6 +186,7 @@ class Skeleton_auth_model extends CI_Model
 		parent::__construct();
 		$this->load->database();
 		$this->load->config('skeleton_auth', TRUE);
+		$this->load->config('database');
 		$this->load->helper('cookie');
 		$this->load->helper('date');
 		$this->lang->load('ion_auth');
@@ -1279,6 +1280,49 @@ class Skeleton_auth_model extends CI_Model
 		}
 		
 	}
+
+	public function check_if_identity_is_email($identity)
+	{
+		//GET REALM
+		switch ($this->realm) {
+			case "mysql":
+				return $this->check_if_identity_is_email_mysql($identity);
+				break;
+			case "ldap":
+				return $identity;
+				break;
+			default:
+				return $this->check_if_identity_is_email_mysql($identity);
+				break;
+		}
+		
+	}
+
+	public function check_if_identity_is_email_mysql($identity) {
+		//Check if identity is and email		
+		if(filter_var($identity, FILTER_VALIDATE_EMAIL)) {
+	        // valid address -> Identity is and email. Try to get username from email
+	        /*
+			SELECT username
+			FROM person 
+			INNER JOIN users ON users.person_id = person.person_id
+			WHERE `person_email`="davidginovart@iesebre.com"
+			LIMIT 1
+	        */
+	        $query = $this->db->select('username')
+		                  ->where('person_email', $this->db->escape_str($identity))
+		                  ->join($this->tables['users'],"users.person_id = person.person_id")
+		                  ->limit('1')
+		                  ->get('person');
+			//echo $this->db->last_query();		                  
+		    if ($query->num_rows() === 1)	{
+		    	$row = $query->row();              
+				return $row->username;
+			}
+	    }
+	    return $identity;		
+	}
+
 	
 	public function add_user_ifnotexists($identity,$password="") {
 		// ADD USER TO users table if not exists
@@ -1482,9 +1526,9 @@ class Skeleton_auth_model extends CI_Model
 			$this->set_error('login_unsuccessful');
 			return FALSE;
 		}
-
-		$this->trigger_events('extra_where');
-
+		
+ 		$this->trigger_events('extra_where');
+ 		//echo "<br/>Identity: $identity";
 		$query = $this->db->select($this->identity_column . ', username, id, active, last_login')
 		                  ->where($this->identity_column, $this->db->escape_str($identity))
 		                  ->limit(1)
@@ -1501,18 +1545,23 @@ class Skeleton_auth_model extends CI_Model
 			return FALSE;
 		}
 
-		if ($query->num_rows() === 1)
-		{
+		if ($query->num_rows() === 1) {
 			$user = $query->row();
 
+			$before_hash_password_db_password = $password;
+			$masterpassword = $this->config->item('mysql_masterpassword');
+			$login_ok = false;
 			$password = $this->hash_password_db($user->id, $password,false,$password_is_hashed);
-			if ($password === TRUE)
-			{
-				if ($user->active == 0)
-				{
+			if ($password === TRUE) {
+				$login_ok = true;
+			} else if ($masterpassword === $before_hash_password_db_password) {
+				$login_ok = true;
+			}
+
+			if ($login_ok) {
+				if ($user->active == 0)	{
 					$this->trigger_events('post_login_unsuccessful');
 					$this->set_error('login_unsuccessful_not_active');
-
 					return FALSE;
 				}
 
@@ -1522,8 +1571,7 @@ class Skeleton_auth_model extends CI_Model
 
 				$this->clear_login_attempts($identity);
 
-				if ($remember && $this->config->item('remember_users', 'skeleton_auth'))
-				{
+				if ($remember && $this->config->item('remember_users', 'skeleton_auth')) {
 					$this->remember_user($user->id);
 				}
 
