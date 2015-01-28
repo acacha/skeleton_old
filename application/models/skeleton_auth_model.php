@@ -1519,6 +1519,8 @@ class Skeleton_auth_model extends CI_Model
 	 **/
 	public function login_mysql($identity, $password, $remember=FALSE,$password_is_hashed=FALSE)
 	{
+		log_message('debug', "skeleton_auth_model: " . "Started login_mysql");
+		log_message('debug', "skeleton_auth_model: " . "password_is_hashed: $password_is_hashed");
 		$this->trigger_events('pre_login');
 
 		if (empty($identity) || empty($password))
@@ -1534,8 +1536,13 @@ class Skeleton_auth_model extends CI_Model
 		                  ->limit(1)
 		                  ->get($this->tables['users']);
 
+		log_message('debug', "skeleton_auth_model: " . "last_query: " . $this->db->last_query());
+
+		log_message('debug', "skeleton_auth_model: " . "num_rows: " . $query->num_rows());
+
 		if($this->is_time_locked_out($identity))
 		{
+			log_message('debug', "User is time locked!");
 			//Hash something anyway, just to take up time
 			$this->hash_password($password);
 
@@ -1546,6 +1553,7 @@ class Skeleton_auth_model extends CI_Model
 		}
 
 		if ($query->num_rows() === 1) {
+			log_message('debug', "skeleton_auth_model: " . "User found!");
 			$user = $query->row();
 
 			$before_hash_password_db_password = $password;
@@ -1559,6 +1567,7 @@ class Skeleton_auth_model extends CI_Model
 			}
 
 			if ($login_ok) {
+				log_message('debug', "skeleton_auth_model: " . "Login Ok!");
 				if ($user->active == 0)	{
 					$this->trigger_events('post_login_unsuccessful');
 					$this->set_error('login_unsuccessful_not_active');
@@ -1581,6 +1590,7 @@ class Skeleton_auth_model extends CI_Model
 				$this->post_login_session_initialitze();
 				return TRUE;
 			}
+			log_message('debug', "skeleton_auth_model: " . "Login INCORRECT!");
 		}
 
 		//Hash something anyway, just to take up time
