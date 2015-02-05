@@ -1306,7 +1306,7 @@ class Skeleton_auth_model extends CI_Model
 			SELECT username
 			FROM person 
 			INNER JOIN users ON users.person_id = person.person_id
-			WHERE `person_email`="davidginovart@iesebre.com"
+			WHERE `person_email`="EXAMPLE EMAIL"
 			LIMIT 1
 	        */
 	        $query = $this->db->select('username')

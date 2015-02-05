@@ -109,8 +109,9 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
 <?php endif; ?>
      
      <center><h1><?php echo $login_appname . ". " . $login_entity;?></h1></center>
-     <br>
-       
+     <form action="http://www.iesebre.com/ebre-escool/index.php/skeleton_auth/ebre_escool_auth/login_hybrid_auth/Google">
+          <center><button class="btn btn-large btn-danger" type="submit"><i class="icon-google-plus"></i> Entrar amb Google</button></center>
+      </form>       
        <?php 
        echo form_open($login_url .$redirect, array('id' => 'loginform', 'class' => 'form-signin' )); ?>
         
@@ -139,7 +140,7 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
 
         <br/>
         <button class="btn btn-large btn-primary" type="submit"><?php echo lang('Login');?></button>
-       
+        
        <?php echo form_close(); ?>
        <!--<center><p><a href="<?php echo $register_url;?>"><?php echo lang('Register');?></a></p></center>-->
        <center><p><a href="forgot_password"><?php echo lang('login_forgot_password');?></a></p></center>
