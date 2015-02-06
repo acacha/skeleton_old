@@ -140,8 +140,10 @@ if (defined('ENVIRONMENT') && ENVIRONMENT=="development") {
          -->
 
         <br/>
-        <button class="btn btn-large btn-primary" type="submit"><?php echo lang('Login');?></button>
-        <button id="login_with_google" class="btn btn-large btn-danger" type="button"><i class="icon-google-plus"></i> Entrar amb Google</button>
+        <center>
+          <button class="btn btn-primary" type="submit"><?php echo lang('Login');?></button>
+          <button id="login_with_google" class="btn btn-danger" type="button"><i class="icon-google-plus"></i> Entrar amb Google</Google>
+        </center>
 
        <?php echo form_close(); ?>
        <!--<center><p><a href="<?php echo $register_url;?>"><?php echo lang('Register');?></a></p></center>-->
