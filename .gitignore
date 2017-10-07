@@ -1,3 +1,23 @@
+<<<<<<< HEAD
 build
 composer.lock
 vendor
+=======
+*~
+application/config/database.php
+application/config/auth_ldap.php
+application/config/skeleton_auth.php
+
+.DS_Store
+
+application/cache/*
+!application/cache/index.html
+!application/cache/.htaccess
+
+application/logs/*
+!application/logs/index.html
+!application/logs/.htaccess
+
+application/third_party/grocery-crud/
+application/third_party/image-crud/
+>>>>>>> e2535ae7aff1649f8cf0451de8a8e689ff903ac6

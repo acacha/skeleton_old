@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # skeleton1
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
@@ -23,7 +24,33 @@ Comandes:
  $ git clone git@github.com:thephpleague/skeleton.git
  $ adminlte skeleton_test 
 
-1)  
+1)  Executar prefill al paquet
+
+```bash
+cd skeleton
+php prefill.php
+```
+
+2) Restaurar git
+        
+```bash
+cd skeleton
+rm -rf .git
+llum github:init
+```
+
+3) Studio
+
+Instalar el paquet
+
+```bash
+composer global require franzl/studio
+cd skeleton_test
+studio load ../skeleton
+composer require "acacha/skeleton1":"dev-master"
+```
+
+Comproveu fitxers studio.json i composer.json.
  
 ## Structure
 
@@ -94,3 +121,9 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-downloads]: https://packagist.org/packages/acacha/skeleton1
 [link-author]: https://github.com/acacha
 [link-contributors]: ../../contributors
+=======
+skeleton
+========
+
+skeleton
+>>>>>>> e2535ae7aff1649f8cf0451de8a8e689ff903ac6
